@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- State when the EditText is focused (being typed in) -->
+    <item android:state_focused="true"
+        android:drawable="@drawable/edittext_background_focused" />
+    <!-- Default, non-focused state -->
+    <item android:drawable="@drawable/edittext_background_default" />
+</selector>

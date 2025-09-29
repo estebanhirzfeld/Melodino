@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/answer_background_selector.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- State when the view is pressed -->
+    <item android:state_pressed="true"
+        android:drawable="@drawable/answer_background_pressed" />
+
+    <!-- State when the view is focused -->
+    <item android:state_focused="true"
+        android:drawable="@drawable/answer_background_pressed" />
+
+    <!-- Default state (not pressed or focused) -->
+    <item android:drawable="@drawable/answer_background_default" />
+
+</selector>
