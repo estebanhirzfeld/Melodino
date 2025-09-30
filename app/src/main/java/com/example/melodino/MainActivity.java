@@ -1,8 +1,12 @@
 package com.example.melodino;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -12,6 +16,165 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.melodino.utils.AudioPlayer;
 
 public class MainActivity extends AppCompatActivity {
+
+    //AutoComplete HELP List
+    private static final String[] SONGS = new String[] {
+            //Michael Jackson Songs
+            "Bad - Michael Jackson",
+            "Billie Jean - Michael Jackson",
+            "Thriller - Michael Jackson",
+            "Beat It - Michael Jackson",
+            "Smooth Criminal - Michael Jackson",
+            "Don't Stop 'Til You Get Enough - Michael Jackson",
+            "Man in the Mirror - Michael Jackson",
+            "The Way You Make Me Feel - Michael Jackson",
+            "Black or White - Michael Jackson",
+            "Rock with You - Michael Jackson",
+            "Wanna Be Startin' Somethin' - Michael Jackson",
+            "P.Y.T. (Pretty Young Thing) - Michael Jackson",
+            "Human Nature - Michael Jackson",
+            "They Don't Care About Us - Michael Jackson",
+            "Dirty Diana - Michael Jackson",
+            "Heal the World - Michael Jackson",
+            "Remember the Time - Michael Jackson",
+            "You Are Not Alone - Michael Jackson",
+            "Earth Song - Michael Jackson",
+            "Jam - Michael Jackson",
+            "Scream - Michael Jackson, Janet Jackson",
+            "You Rock My World - Michael Jackson",
+            "Leave Me Alone - Michael Jackson",
+            "Another Part of Me - Michael Jackson",
+            "The Girl Is Mine - Michael Jackson, Paul McCartney",
+            "Off the Wall - Michael Jackson",
+            "She's Out of My Life - Michael Jackson",
+            "In the Closet - Michael Jackson",
+            "Will You Be There - Michael Jackson",
+            "Give In to Me - Michael Jackson",
+            "I Want You Back - The Jackson 5",
+            "ABC - The Jackson 5",
+            "I'll Be There - The Jackson 5",
+            "The Love You Save - The Jackson 5",
+            "Never Can Say Goodbye - The Jackson 5",
+            "Dancing Machine - The Jackson 5",
+            "Blame It on the Boogie - The Jacksons",
+            "Shake Your Body (Down to the Ground) - The Jacksons",
+            "Can You Feel It - The Jacksons",
+            "Enjoy Yourself - The Jacksons",
+
+            // Twenty One Pilots Songs
+            "Ride - Twenty One Pilots",
+            "Stressed Out - Twenty One Pilots",
+            "Heathens - Twenty One Pilots",
+            "Chlorine - Twenty One Pilots",
+            "Car Radio - Twenty One Pilots",
+            "Tear in My Heart - Twenty One Pilots",
+            "My Blood - Twenty One Pilots",
+            "Jumpsuit - Twenty One Pilots",
+            "Heavydirtysoul - Twenty One Pilots",
+            "Lane Boy - Twenty One Pilots",
+            "Holding On To You - Twenty One Pilots",
+            "House of Gold - Twenty One Pilots",
+            "Guns for Hands - Twenty One Pilots",
+            "Migraine - Twenty One Pilots",
+            "Trees - Twenty One Pilots",
+            "Level of Concern - Twenty One Pilots",
+            "Shy Away - Twenty One Pilots",
+            "The Hype - Twenty One Pilots",
+            "Nico and the Niners - Twenty One Pilots",
+            "Goner - Twenty One Pilots",
+            "Leave The City - Twenty One Pilots",
+            "Neon Gravestones - Twenty One Pilots",
+            "Addict With a Pen - Twenty One Pilots",
+            "Truce - Twenty One Pilots",
+
+            // General Popular Songs
+            "Bohemian Rhapsody - Queen",
+            "Like a Rolling Stone - Bob Dylan",
+            "Smells Like Teen Spirit - Nirvana",
+            "Imagine - John Lennon",
+            "What's Going On - Marvin Gaye",
+            "Hey Jude - The Beatles",
+            "Good Vibrations - The Beach Boys",
+            "Johnny B. Goode - Chuck Berry",
+            "Stairway to Heaven - Led Zeppelin",
+            "Billie Jean - Michael Jackson",
+            "Hotel California - Eagles",
+            "Sweet Child O' Mine - Guns N' Roses",
+            "I Will Always Love You - Whitney Houston",
+            "Hallelujah - Leonard Cohen",
+            "Wonderwall - Oasis",
+            "Yesterday - The Beatles",
+            "Superstition - Stevie Wonder",
+            "(I Can't Get No) Satisfaction - The Rolling Stones",
+            "No Woman, No Cry - Bob Marley & The Wailers",
+            "Losing My Religion - R.E.M.",
+            "One - U2",
+            "Bridge Over Troubled Water - Simon & Garfunkel",
+            "God Only Knows - The Beach Boys",
+            "Respect - Aretha Franklin",
+            "Purple Haze - The Jimi Hendrix Experience",
+            "London Calling - The Clash",
+            "Born to Run - Bruce Springsteen",
+            "Be My Baby - The Ronettes",
+            "In Da Club - 50 Cent",
+            "Crazy in Love - Beyoncé ft. Jay-Z",
+            "Rolling in the Deep - Adele",
+            "Uptown Funk - Mark Ronson ft. Bruno Mars",
+            "Shape of You - Ed Sheeran",
+            "Blinding Lights - The Weeknd",
+            "Someone Like You - Adele",
+            "Get Lucky - Daft Punk ft. Pharrell Williams",
+            "Happy - Pharrell Williams",
+            "Call Me Maybe - Carly Rae Jepsen",
+            "Gangnam Style - PSY",
+            "Despacito - Luis Fonsi & Daddy Yankee ft. Justin Bieber",
+            "Old Town Road - Lil Nas X ft. Billy Ray Cyrus",
+            "Bad Guy - Billie Eilish",
+            "Watermelon Sugar - Harry Styles",
+            "Levitating - Dua Lipa",
+            "Good 4 U - Olivia Rodrigo",
+            "Stay - The Kid LAROI & Justin Bieber",
+            "As It Was - Harry Styles",
+            "Anti-Hero - Taylor Swift",
+            "Flowers - Miley Cyrus",
+            "Last Nite - The Strokes",
+            "Mr. Brightside - The Killers",
+            "Take Me Out - Franz Ferdinand",
+            "Seven Nation Army - The White Stripes",
+            "Hey Ya! - OutKast",
+            "All My Friends - LCD Soundsystem",
+            "Cranes in the Sky - Solange",
+            "Alright - Kendrick Lamar",
+            "Redbone - Childish Gambino",
+            "Thinkin Bout You - Frank Ocean",
+            "Royals - Lorde",
+            "Chandelier - Sia",
+            "Formation - Beyoncé",
+            "This Is America - Childish Gambino",
+            "Thank U, Next - Ariana Grande",
+            "Juice - Lizzo",
+            "Adore You - Harry Styles",
+            "Don't Start Now - Dua Lipa",
+            "Save Your Tears - The Weeknd",
+            "Montero (Call Me By Your Name) - Lil Nas X",
+            "Drivers License - Olivia Rodrigo",
+            "Peaches - Justin Bieber ft. Daniel Caesar & Giveon",
+            "Kiss Me More - Doja Cat ft. SZA",
+            "Industry Baby - Lil Nas X & Jack Harlow",
+            "Easy On Me - Adele",
+            "Shivers - Ed Sheeran",
+            "Heat Waves - Glass Animals",
+            "Cold Heart (PNAU Remix) - Elton John & Dua Lipa",
+            "abcdefu - GAYLE",
+            "The Twist - Chubby Checker",
+            "Smooth - Santana ft. Rob Thomas",
+            "Mack the Knife - Bobby Darin",
+            "Party Rock Anthem - LMFAO ft. Lauren Bennett & GoonRock",
+            "I Gotta Feeling - The Black Eyed Peas",
+            "Macarena (Bayside Boys Mix) - Los Del Rio",
+            "Your Song - Elton John",
+            "Take on Me - A-ha"
+    };
 
     private static final int MAX_ATTEMPTS = 5;
     private static final int INITIAL_DURATION = 1000; // 1 second
@@ -30,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView pointsText;
     private View progressBar;
 
-    private String correctAnswer = "Song Name"; // TODO: Set your correct answer
+    private String correctAnswer = SONGS[0]; // TODO: Set your correct answer
     private String[] attempts = new String[MAX_ATTEMPTS];
     private int currentAttempt = 0;
     private int playbackDuration = INITIAL_DURATION;
@@ -40,10 +203,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //AutoComplete HELP List
+        // Get a reference to the AutoCompleteTextView from the layout
+        AutoCompleteTextView answerInput = findViewById(R.id.answer_input);
+
+        // Create an adapter and set it to the AutoCompleteTextView
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, SONGS);
+        answerInput.setAdapter(adapter);
+
         // Initialize views
         playButton = findViewById(R.id.play_button);
         titleText = findViewById(R.id.title_text);
-        answerInput = findViewById(R.id.answer_input);
+//        answerInput = findViewById(R.id.answer_input);
         submitButton = findViewById(R.id.submit_button);
         timeText = findViewById(R.id.time_text);
         pointsText = findViewById(R.id.points_text);
@@ -96,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                 return; // Maximum attempts reached
             }
 
-            String userAnswer = answerInput.getText().toString().trim();
+            String userAnswer = answerInput.getText().toString().trim().replace(",", "").replace("\"", "");
             if (userAnswer.isEmpty()) {
                 userAnswer = null; // skipped
             }
@@ -126,6 +298,12 @@ public class MainActivity extends AppCompatActivity {
 
             currentAttempt++;
             answerInput.setText("");
+
+            // Hide keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(answerInput.getWindowToken(), 0);
+            }
 
             // Update title
             if (isCorrect) {
