@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.melodino.utils.AudioPlayer;
+import com.example.melodino.utils.Levenshtein;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -215,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize views
         playButton = findViewById(R.id.play_button);
         titleText = findViewById(R.id.title_text);
-//        answerInput = findViewById(R.id.answer_input);
         submitButton = findViewById(R.id.submit_button);
         timeText = findViewById(R.id.time_text);
         pointsText = findViewById(R.id.points_text);
@@ -277,7 +277,16 @@ public class MainActivity extends AppCompatActivity {
             TextView currentTextView = answerTextViews[currentAttempt];
 
             // Check if answer is correct
-            boolean isCorrect = correctAnswer.equalsIgnoreCase(userAnswer);
+//            boolean isCorrect = correctAnswer.equalsIgnoreCase(userAnswer);
+//            boolean isCorrect = correctAnswer.toLowerCase().contains(userAnswer.toLowerCase());
+
+
+            //Levenshtein Algorithm
+            String correctAnswerTitle = correctAnswer.split(" - ")[0];
+            //Calc Levenshtein Distance
+            int distance = Levenshtein.computeLevenshteinDistance(correctAnswerTitle, userAnswer);
+            boolean isCorrect = distance <= 2;
+
 
             // Update corresponding TextView
             if (userAnswer != null) {
@@ -322,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
                 if (currentAttempt < MAX_ATTEMPTS) {
                     titleText.setText("Incorrect! Attempt " + (currentAttempt + 1) + "/" + MAX_ATTEMPTS);
                 } else {
-                    titleText.setText("Game over! Correct answer: " + correctAnswer);
+                    titleText.setText("Game over!\nCorrect answer: " + correctAnswer);
                     playButton.setEnabled(false);
                     submitButton.setEnabled(false);
                 }
