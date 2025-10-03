@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.melodino.utils.AudioPlayer;
 import com.example.melodino.utils.Levenshtein;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     //AutoComplete HELP List
@@ -285,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
             String correctAnswerTitle = correctAnswer.split(" - ")[0];
             //Calc Levenshtein Distance
             int distance = Levenshtein.computeLevenshteinDistance(correctAnswerTitle, userAnswer);
-            boolean isCorrect = distance <= 2;
+            boolean isCorrect = distance <= 2 || correctAnswer.equalsIgnoreCase(userAnswer);
 
 
             // Update corresponding TextView
