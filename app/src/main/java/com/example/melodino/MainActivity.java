@@ -198,10 +198,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView pointsText;
     private View progressBar;
 
-    private String correctAnswer = SONGS[0]; // TODO: Will be file name
+    private String correctAnswer = SONGS[0]; // TODO: Will be file name  -------------------------------------------------------------------------------
     private String[] attempts = new String[MAX_ATTEMPTS];
     private int currentAttempt = 0;
     private int playbackDuration = INITIAL_DURATION;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -233,8 +234,19 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.answer_5_text)
         };
 
+
+        
+
         // Initialize AudioPlayer
-        audioPlayer = new AudioPlayer(this, R.raw.song);
+        // audioPlayer = new AudioPlayer(this, R.raw.song); ***********************************************
+
+        Random random = new Random();
+        int randomIndex = random.nextInt(songResources.length);
+        
+        currentSongResource = songResources[randomIndex];
+        correctAnswer = songNames[randomIndex];
+        
+        audioPlayer = new AudioPlayer(this, currentSongResource);
 
         // Update progress bar and points initially
         updateProgressAndPoints();
@@ -379,4 +391,27 @@ public class MainActivity extends AppCompatActivity {
             audioPlayer.release();
         }
     }
+
+    private void setupRandomSong() {
+        // Define your songs with resource IDs and their display names
+        int[] songResources = {
+            R.raw.du_hast_rammstein,
+            R.raw.i_wonder_kanye_west, 
+            R.raw.mama_im_coming_home_ozzy_osbourne,
+            R.raw.paranoid_black_sabbath,
+            R.raw.sonne_rammstein,
+            R.raw.stronger_kanye_west,
+            R.raw.war_pigs_black_sabbath
+        };
+        
+        String[] songNames = {
+            "Du Hast - Rammstein",
+            "I Wonder - Kanye West",
+            "Mama, I'm Coming Home - Ozzy Osbourne", 
+            "Paranoid - Black Sabbath",
+            "Sonne - Rammstein",
+            "Stronger - Kanye West",
+            "War Pigs - Black Sabbath"
+    };
+}
 }
