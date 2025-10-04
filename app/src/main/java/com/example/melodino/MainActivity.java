@@ -179,12 +179,14 @@ public class MainActivity extends AppCompatActivity {
             "Take on Me - A-ha"
     };
 
+    // SETTINGS
     private static final int MAX_ATTEMPTS = 5;
     private static final int INITIAL_DURATION = 1000; // 1 second
     private static final double DURATION_INCREMENT = 1.6; // Multiply by 1.6 per failed attempt
-    private static final int TOTAL_SONG_DURATION = 15000; // 10 seconds total
+    private static final int TOTAL_SONG_DURATION = 15000; // 15 seconds total
     private static final int MAX_POINTS = 5;
     private static final int MIN_POINTS = 1;
+
 
     private AudioPlayer audioPlayer;
     private ImageButton playButton;
@@ -196,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView pointsText;
     private View progressBar;
 
-    private String correctAnswer = SONGS[0]; // TODO: Set your correct answer
+    private String correctAnswer = SONGS[0]; // TODO: Will be file name
     private String[] attempts = new String[MAX_ATTEMPTS];
     private int currentAttempt = 0;
     private int playbackDuration = INITIAL_DURATION;
@@ -367,15 +369,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private int calculatePoints() {
-//        // Calculate points based on playback duration
-//        // Less time listened = more points
-//        float durationRatio = (float) playbackDuration / TOTAL_SONG_DURATION;
-//
-//        if (durationRatio <= 0.1) return MAX_POINTS;      // 1-2 seconds = 5 pts
-//        else if (durationRatio <= 0.2) return MAX_POINTS - 1;  // 2-3 seconds = 4 pts
-//        else if (durationRatio <= 0.4) return MAX_POINTS - 2;  // 3-6 seconds = 3 pts
-//        else if (durationRatio <= 0.6) return MAX_POINTS - 3;  // 6-10 seconds = 2 pts
-//        else return MIN_POINTS;                           // 10+ seconds = 1 pt
         return MAX_POINTS - currentAttempt;
     }
 
