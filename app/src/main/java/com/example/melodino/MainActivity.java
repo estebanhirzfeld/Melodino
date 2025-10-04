@@ -17,11 +17,15 @@ import com.example.melodino.utils.AudioPlayer;
 import com.example.melodino.utils.Levenshtein;
 
 import java.util.Objects;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     //AutoComplete HELP List
     private static final String[] SONGS = new String[] {
+
+
+
             //Michael Jackson Songs
             "Bad - Michael Jackson",
             "Billie Jean - Michael Jackson",
@@ -176,7 +180,15 @@ public class MainActivity extends AppCompatActivity {
             "I Gotta Feeling - The Black Eyed Peas",
             "Macarena (Bayside Boys Mix) - Los Del Rio",
             "Your Song - Elton John",
-            "Take on Me - A-ha"
+            "Take on Me - A-ha",
+            //Other Songs
+            "Du Hast - Rammstein",
+            "I Wonder - Kanye West",
+            "Mama, I'm Coming Home - Ozzy Osbourne",
+            "Paranoid - Black Sabbath",
+            "Sonne - Rammstein",
+            "Stronger - Kanye West",
+            "War Pigs - Black Sabbath"
     };
 
     // SETTINGS
@@ -241,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
         // audioPlayer = new AudioPlayer(this, R.raw.song); ***********************************************
 
         // Initialize AudioPlayer w random song
-        setupRandomSong()
+        setupRandomSong();
 
         // Update progress bar and points initially
         updateProgressAndPoints();
@@ -281,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
 
             String userAnswer = answerInput.getText().toString().trim().replace(",", "").replace("\"", "");
             if (userAnswer.isEmpty()) {
-                userAnswer = null; // skipped
+                userAnswer = ""; // skipped
             }
 
             attempts[currentAttempt] = userAnswer;
@@ -410,8 +422,8 @@ public class MainActivity extends AppCompatActivity {
         
         Random random = new Random();
         int randomIndex = random.nextInt(songResources.length);
-        
-        currentSongResource = songResources[randomIndex];
+
+        int currentSongResource = songResources[randomIndex];
         correctAnswer = songNames[randomIndex];
         
         audioPlayer = new AudioPlayer(this, currentSongResource);
