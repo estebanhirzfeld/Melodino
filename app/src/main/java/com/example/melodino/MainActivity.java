@@ -240,13 +240,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize AudioPlayer
         // audioPlayer = new AudioPlayer(this, R.raw.song); ***********************************************
 
-        Random random = new Random();
-        int randomIndex = random.nextInt(songResources.length);
-        
-        currentSongResource = songResources[randomIndex];
-        correctAnswer = songNames[randomIndex];
-        
-        audioPlayer = new AudioPlayer(this, currentSongResource);
+        // Initialize AudioPlayer w random song
+        setupRandomSong()
 
         // Update progress bar and points initially
         updateProgressAndPoints();
@@ -393,7 +388,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupRandomSong() {
-        // Define your songs with resource IDs and their display names
         int[] songResources = {
             R.raw.du_hast_rammstein,
             R.raw.i_wonder_kanye_west, 
@@ -412,6 +406,14 @@ public class MainActivity extends AppCompatActivity {
             "Sonne - Rammstein",
             "Stronger - Kanye West",
             "War Pigs - Black Sabbath"
-    };
+        };
+        
+        Random random = new Random();
+        int randomIndex = random.nextInt(songResources.length);
+        
+        currentSongResource = songResources[randomIndex];
+        correctAnswer = songNames[randomIndex];
+        
+        audioPlayer = new AudioPlayer(this, currentSongResource);
 }
 }
