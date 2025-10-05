@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/ic_dino.xml -->
+<!-- Simple dinosaur placeholder - you can replace this with your actual dinosaur image -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="192dp"
+    android:height="192dp"
+    android:viewportWidth="192"
+    android:viewportHeight="192">
+
+    <!-- Circle background -->
+    <path
+        android:fillColor="@color/colorPrimary"
+        android:pathData="M96,96m-80,0a80,80 0,1 1,160 0a80,80 0,1 1,-160 0" />
+
+    <!-- Simple dino shape -->
+    <path
+        android:fillColor="@color/colorBackgroundDark"
+        android:pathData="M70,80m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+    <path
+        android:fillColor="@color/colorBackgroundDark"
+        android:pathData="M122,80m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+    <path
+        android:fillColor="@color/colorBackgroundDark"
+        android:pathData="M96,110 Q80,120 80,130 Q80,140 96,140 Q112,140 112,130 Q112,120 96,110 Z" />
+</vector>

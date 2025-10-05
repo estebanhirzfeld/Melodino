@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackgroundLight"
+    android:padding="16dp">
+
+    <!-- Dinosaur Image -->
+    <ImageView
+        android:id="@+id/dino_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="Melodino Dinosaur"
+        android:src="@drawable/ic_dino"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toTopOf="@id/win_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.25" />
+
+    <!-- You Won Title -->
+    <TextView
+        android:id="@+id/win_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="You Won!"
+        android:textColor="@color/colorPrimary"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dino_image" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/win_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Congratulations, you're a true music master!"
+        android:textColor="@color/white"
+        android:alpha="0.8"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/win_title" />
+
+    <!-- Score Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/score_card"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="32dp"
+        app:cardBackgroundColor="#4D38e07b"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toTopOf="@id/share_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/win_subtitle"
+        app:layout_constraintHeight_percent="0.25">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Score"
+                android:textColor="@color/white50"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/score_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="1,850"
+                android:textColor="@color/white"
+                android:textSize="36sp"
+                android:textStyle="bold" />
+
+            <!-- Bonus Info Row -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <!-- Points Bonus -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginEnd="16dp">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_check"
+                        android:layout_marginEnd="4dp"
+                        app:tint="@color/colorPrimary" />
+
+                    <TextView
+                        android:id="@+id/points_bonus_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+ 100 points"
+                        android:textColor="@color/white"
+                        android:alpha="0.8"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Time Bonus -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_timer"
+                        android:layout_marginEnd="4dp"
+                        app:tint="@color/colorPrimary" />
+
+                    <TextView
+                        android:id="@+id/time_bonus_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-5s bonus"
+                        android:textColor="@color/white"
+                        android:alpha="0.8"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Share Button -->
+    <Button
+        android:id="@+id/share_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="32dp"
+        android:background="@drawable/submit_button_background"
+        app:backgroundTint="@null"
+        android:drawableStart="@drawable/ic_share"
+        android:drawablePadding="8dp"
+        android:text="Share Your Achievement"
+        android:textColor="@color/colorBackgroundDark"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingHorizontal="24dp"
+        app:layout_constraintBottom_toTopOf="@id/play_again_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/score_card"
+        app:layout_constraintHeight_percent="0.08" />
+
+    <!-- Play Again Button -->
+    <Button
+        android:id="@+id/play_again_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="32dp"
+        android:background="@drawable/submit_button_background"
+        app:backgroundTint="@null"
+        android:text="Play Again"
+        android:textColor="@color/colorBackgroundDark"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/main_menu_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/share_button"
+        app:layout_constraintHeight_percent="0.08" />
+
+    <!-- Main Menu Button -->
+    <Button
+        android:id="@+id/main_menu_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginHorizontal="32dp"
+        android:background="@drawable/submit_button_background"
+        android:text="Main Menu"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/play_again_button"
+        app:layout_constraintHeight_percent="0.08" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.example.melodino;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 
             String userAnswer = answerInput.getText().toString().trim().replace(",", "").replace("\"", "");
             if (userAnswer.isEmpty()) {
-                userAnswer = ""; // skipped
+                userAnswer = "Skipped"; // skipped
             }
 
             attempts[currentAttempt] = userAnswer;
@@ -339,9 +340,14 @@ public class MainActivity extends AppCompatActivity {
 
             // Update title
             if (isCorrect) {
-                titleText.setText("Correct!");
+                titleText.setText("Correct!\nSong: " + correctAnswer);
                 playButton.setEnabled(false); // Disable play button on correct answer
                 submitButton.setEnabled(false); // Disable submit button
+
+                //Win Activity
+                Intent intent = new Intent(MainActivity.this, WinActivity.class);
+                startActivity(intent);
+
             } else {
                 // Increment playback duration for next attempt
                 double adjustment = currentAttempt >= 1 ? currentAttempt * 1000 : 0;
@@ -354,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
                 if (currentAttempt < MAX_ATTEMPTS) {
                     titleText.setText("Incorrect! Attempt " + (currentAttempt + 1) + "/" + MAX_ATTEMPTS);
                 } else {
-                    titleText.setText("Game over!\nCorrect answer: " + correctAnswer);
+                    titleText.setText("Game over!\nCorrect song: " + correctAnswer);
                     playButton.setEnabled(false);
                     submitButton.setEnabled(false);
                 }
