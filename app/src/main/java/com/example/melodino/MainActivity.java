@@ -396,6 +396,10 @@ public class MainActivity extends AppCompatActivity {
                     titleText.setText("Game over!\nCorrect song: " + correctAnswer);
                     playButton.setEnabled(false);
                     submitButton.setEnabled(false);
+
+                    Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
+                    intent.putExtra("correctAnswer", correctAnswer);
+                    startActivity(intent);
                 }
             }
         });

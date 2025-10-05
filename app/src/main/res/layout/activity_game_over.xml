@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackgroundLight"
+    android:padding="16dp">
+
+    <!-- Sad Dinosaur Image -->
+    <ImageView
+        android:id="@+id/sad_dino_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginRight="50dp"
+        android:contentDescription="Sad Melodino Dinosaur"
+        android:src="@drawable/ic_sad_dino"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toTopOf="@id/game_over_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.3" />
+
+    <!-- You Lost Title -->
+    <TextView
+        android:id="@+id/game_over_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="You Lost!"
+        android:textColor="@color/colorError"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sad_dino_image" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/game_over_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Better luck next time. Don't give up!"
+        android:textColor="@color/white"
+        android:alpha="0.8"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/game_over_title" />
+
+    <!-- Correct Answer Display -->
+    <LinearLayout
+        android:id="@+id/correct_answer_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="32dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="@color/colorPrimary30"
+        app:layout_constraintBottom_toTopOf="@id/try_again_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/game_over_subtitle"
+        app:layout_constraintHeight_percent="0.15">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="The correct answer was:"
+            android:textColor="@color/white50"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/correct_answer_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Song Name - Artist"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <!-- Try Again Button -->
+    <Button
+        android:id="@+id/try_again_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="32dp"
+        android:background="@drawable/submit_button_background"
+        app:backgroundTint="@null"
+        android:text="Try Again"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/main_menu_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/correct_answer_container"
+        app:layout_constraintHeight_percent="0.08" />
+
+    <!-- Main Menu Button -->
+    <Button
+        android:id="@+id/main_menu_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginHorizontal="32dp"
+        android:background="@drawable/main_menu_button_background"
+        android:text="Main Menu"
+        app:backgroundTint="@null"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/try_again_button"
+        app:layout_constraintHeight_percent="0.08" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
