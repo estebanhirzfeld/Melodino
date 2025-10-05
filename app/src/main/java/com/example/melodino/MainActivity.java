@@ -27,6 +27,39 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+            //Other
+            "Mein Teil - Rammstein",
+            "Ich Will - Rammstein",
+            "Engel - Rammstein",
+            "Amerika - Rammstein",
+            "Feuer Frei! - Rammstein",
+            "Links 2 3 4 - Rammstein",
+            "Keine Lust - Rammstein",
+
+            "Gold Digger - Kanye West",
+            "Flashing Lights - Kanye West",
+            "Power - Kanye West",
+            "Heartless - Kanye West",
+            "All of the Lights - Kanye West",
+            "Black Skinhead - Kanye West",
+            "Bound 2 - Kanye West",
+
+            "Crazy Train - Ozzy Osbourne",
+            "Mr. Crowley - Ozzy Osbourne",
+            "No More Tears - Ozzy Osbourne",
+            "Bark at the Moon - Ozzy Osbourne",
+            "Flying High Again - Ozzy Osbourne",
+            "Over the Mountain - Ozzy Osbourne",
+            "Dreamer - Ozzy Osbourne",
+
+            "Iron Man - Black Sabbath",
+            "N.I.B. - Black Sabbath",
+            "Children of the Grave - Black Sabbath",
+            "Heaven and Hell - Black Sabbath",
+            "Sabbath Bloody Sabbath - Black Sabbath",
+            "Snowblind - Black Sabbath",
+            "The Wizard - Black Sabbath",
+
             //Michael Jackson Songs
             "Bad - Michael Jackson",
             "Billie Jean - Michael Jackson",
@@ -185,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
             //Other Songs
             "Du Hast - Rammstein",
             "I Wonder - Kanye West",
-            "Mama, I'm Coming Home - Ozzy Osbourne",
+            "Mama Im Coming Home - Ozzy Osbourne",
             "Paranoid - Black Sabbath",
             "Sonne - Rammstein",
             "Stronger - Kanye West",
@@ -211,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView pointsText;
     private View progressBar;
 
-    private String correctAnswer = SONGS[0]; // TODO: Will be file name  -------------------------------------------------------------------------------
+    private String correctAnswer = SONGS[0];
     private String[] attempts = new String[MAX_ATTEMPTS];
     private int currentAttempt = 0;
     private int playbackDuration = INITIAL_DURATION;
@@ -419,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
         String[] songNames = {
             "Du Hast - Rammstein",
             "I Wonder - Kanye West",
-            "Mama, I'm Coming Home - Ozzy Osbourne", 
+            "Mama Im Coming Home - Ozzy Osbourne",
             "Paranoid - Black Sabbath",
             "Sonne - Rammstein",
             "Stronger - Kanye West",
