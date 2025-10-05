@@ -14,7 +14,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
         android:contentDescription="Melodino Dinosaur"
-        android:src="@drawable/ic_dino"
+        android:src="@drawable/dino_win"
         android:scaleType="centerInside"
         app:layout_constraintBottom_toTopOf="@id/win_title"
         app:layout_constraintEnd_toEndOf="parent"

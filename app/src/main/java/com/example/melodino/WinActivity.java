@@ -34,10 +34,6 @@ public class WinActivity extends AppCompatActivity {
         playAgainButton = findViewById(R.id.play_again_button);
         mainMenuButton = findViewById(R.id.main_menu_button);
 
-//        set image with dino_win image
-        ImageView dinoWin = findViewById(R.id.dino_image);
-        dinoWin.setImageResource(R.drawable.dino_win);
-
         // Get data from intent
         int score = getIntent().getIntExtra(EXTRA_SCORE, 0);
         int pointsBonus = getIntent().getIntExtra(EXTRA_POINTS_BONUS, 0);
@@ -67,7 +63,7 @@ public class WinActivity extends AppCompatActivity {
         mainMenuButton.setOnClickListener(v -> {
             // TODO: Navigate to main menu
             // For now, just go back to MainActivity
-            Intent intent = new Intent(WinActivity.this, MainActivity.class);
+            Intent intent = new Intent(WinActivity.this, WelcomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
