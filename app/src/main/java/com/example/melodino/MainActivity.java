@@ -376,10 +376,12 @@ public class MainActivity extends AppCompatActivity {
                 titleText.setText("Correct!\nSong: " + correctAnswer);
                 playButton.setEnabled(false); // Disable play button on correct answer
                 submitButton.setEnabled(false); // Disable submit button
-
-                //Win Activity
+                // add points to the intent
+                //WinActivity
                 Intent intent = new Intent(MainActivity.this, WinActivity.class);
+                intent.putExtra("EXTRA_SCORE", calculatePoints() * 100 + 100);
                 startActivity(intent);
+
 
             } else {
                 // Increment playback duration for next attempt
