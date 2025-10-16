@@ -80,7 +80,7 @@ public class WinActivity extends AppCompatActivity {
         KonfettiView konfettiView = findViewById(R.id.konfettiView);
 
         Party party = new PartyFactory(
-                new Emitter(5, TimeUnit.SECONDS).max(200)
+                new Emitter(5, TimeUnit.SECONDS).max(score)
         ).build();
 
         konfettiView.start(party);
