@@ -8,6 +8,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import nl.dionsegijn.konfetti.core.Party;
+import nl.dionsegijn.konfetti.core.PartyFactory;
+import nl.dionsegijn.konfetti.core.emitter.Emitter;
+import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
+import nl.dionsegijn.konfetti.xml.KonfettiView;
+import java.util.concurrent.TimeUnit;
+
 public class WinActivity extends AppCompatActivity {
 
     public static final String EXTRA_SCORE = "EXTRA_SCORE";
@@ -68,6 +75,15 @@ public class WinActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+        // In your Activity or Fragment
+        KonfettiView konfettiView = findViewById(R.id.konfettiView);
+
+        Party party = new PartyFactory(
+                new Emitter(5, TimeUnit.SECONDS).max(200)
+        ).build();
+
+        konfettiView.start(party);
     }
 
     private void shareScore(String message, int score) {
