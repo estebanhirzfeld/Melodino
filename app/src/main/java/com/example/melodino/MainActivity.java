@@ -30,205 +30,8 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     // AutoComplete HELP List
-    private static final String[] SONGS = new String[] {
-
-            // Other
-            "Mein Teil - Rammstein",
-            "Ich Will - Rammstein",
-            "Engel - Rammstein",
-            "Amerika - Rammstein",
-            "Feuer Frei! - Rammstein",
-            "Links 2 3 4 - Rammstein",
-            "Keine Lust - Rammstein",
-
-            "Gold Digger - Kanye West",
-            "Flashing Lights - Kanye West",
-            "Power - Kanye West",
-            "Heartless - Kanye West",
-            "All of the Lights - Kanye West",
-            "Black Skinhead - Kanye West",
-            "Bound 2 - Kanye West",
-
-            "Crazy Train - Ozzy Osbourne",
-            "Mr. Crowley - Ozzy Osbourne",
-            "No More Tears - Ozzy Osbourne",
-            "Bark at the Moon - Ozzy Osbourne",
-            "Flying High Again - Ozzy Osbourne",
-            "Over the Mountain - Ozzy Osbourne",
-            "Dreamer - Ozzy Osbourne",
-
-            "Iron Man - Black Sabbath",
-            "N.I.B. - Black Sabbath",
-            "Children of the Grave - Black Sabbath",
-            "Heaven and Hell - Black Sabbath",
-            "Sabbath Bloody Sabbath - Black Sabbath",
-            "Snowblind - Black Sabbath",
-            "The Wizard - Black Sabbath",
-
-            // Michael Jackson Songs
-            "Bad - Michael Jackson",
-            "Billie Jean - Michael Jackson",
-            "Thriller - Michael Jackson",
-            "Beat It - Michael Jackson",
-            "Smooth Criminal - Michael Jackson",
-            "Don't Stop 'Til You Get Enough - Michael Jackson",
-            "Man in the Mirror - Michael Jackson",
-            "The Way You Make Me Feel - Michael Jackson",
-            "Black or White - Michael Jackson",
-            "Rock with You - Michael Jackson",
-            "Wanna Be Startin' Somethin' - Michael Jackson",
-            "P.Y.T. (Pretty Young Thing) - Michael Jackson",
-            "Human Nature - Michael Jackson",
-            "They Don't Care About Us - Michael Jackson",
-            "Dirty Diana - Michael Jackson",
-            "Heal the World - Michael Jackson",
-            "Remember the Time - Michael Jackson",
-            "You Are Not Alone - Michael Jackson",
-            "Earth Song - Michael Jackson",
-            "Jam - Michael Jackson",
-            "Scream - Michael Jackson, Janet Jackson",
-            "You Rock My World - Michael Jackson",
-            "Leave Me Alone - Michael Jackson",
-            "Another Part of Me - Michael Jackson",
-            "The Girl Is Mine - Michael Jackson, Paul McCartney",
-            "Off the Wall - Michael Jackson",
-            "She's Out of My Life - Michael Jackson",
-            "In the Closet - Michael Jackson",
-            "Will You Be There - Michael Jackson",
-            "Give In to Me - Michael Jackson",
-            "I Want You Back - The Jackson 5",
-            "ABC - The Jackson 5",
-            "I'll Be There - The Jackson 5",
-            "The Love You Save - The Jackson 5",
-            "Never Can Say Goodbye - The Jackson 5",
-            "Dancing Machine - The Jackson 5",
-            "Blame It on the Boogie - The Jacksons",
-            "Shake Your Body (Down to the Ground) - The Jacksons",
-            "Can You Feel It - The Jacksons",
-            "Enjoy Yourself - The Jacksons",
-
-            // Twenty One Pilots Songs
-            "Ride - Twenty One Pilots",
-            "Stressed Out - Twenty One Pilots",
-            "Heathens - Twenty One Pilots",
-            "Chlorine - Twenty One Pilots",
-            "Car Radio - Twenty One Pilots",
-            "Tear in My Heart - Twenty One Pilots",
-            "My Blood - Twenty One Pilots",
-            "Jumpsuit - Twenty One Pilots",
-            "Heavydirtysoul - Twenty One Pilots",
-            "Lane Boy - Twenty One Pilots",
-            "Holding On To You - Twenty One Pilots",
-            "House of Gold - Twenty One Pilots",
-            "Guns for Hands - Twenty One Pilots",
-            "Migraine - Twenty One Pilots",
-            "Trees - Twenty One Pilots",
-            "Level of Concern - Twenty One Pilots",
-            "Shy Away - Twenty One Pilots",
-            "The Hype - Twenty One Pilots",
-            "Nico and the Niners - Twenty One Pilots",
-            "Goner - Twenty One Pilots",
-            "Leave The City - Twenty One Pilots",
-            "Neon Gravestones - Twenty One Pilots",
-            "Addict With a Pen - Twenty One Pilots",
-            "Truce - Twenty One Pilots",
-
-            // General Popular Songs
-            "Bohemian Rhapsody - Queen",
-            "Like a Rolling Stone - Bob Dylan",
-            "Smells Like Teen Spirit - Nirvana",
-            "Imagine - John Lennon",
-            "What's Going On - Marvin Gaye",
-            "Hey Jude - The Beatles",
-            "Good Vibrations - The Beach Boys",
-            "Johnny B. Goode - Chuck Berry",
-            "Stairway to Heaven - Led Zeppelin",
-            "Billie Jean - Michael Jackson",
-            "Hotel California - Eagles",
-            "Sweet Child O' Mine - Guns N' Roses",
-            "I Will Always Love You - Whitney Houston",
-            "Hallelujah - Leonard Cohen",
-            "Wonderwall - Oasis",
-            "Yesterday - The Beatles",
-            "Superstition - Stevie Wonder",
-            "(I Can't Get No) Satisfaction - The Rolling Stones",
-            "No Woman, No Cry - Bob Marley & The Wailers",
-            "Losing My Religion - R.E.M.",
-            "One - U2",
-            "Bridge Over Troubled Water - Simon & Garfunkel",
-            "God Only Knows - The Beach Boys",
-            "Respect - Aretha Franklin",
-            "Purple Haze - The Jimi Hendrix Experience",
-            "London Calling - The Clash",
-            "Born to Run - Bruce Springsteen",
-            "Be My Baby - The Ronettes",
-            "In Da Club - 50 Cent",
-            "Crazy in Love - Beyoncé ft. Jay-Z",
-            "Rolling in the Deep - Adele",
-            "Uptown Funk - Mark Ronson ft. Bruno Mars",
-            "Shape of You - Ed Sheeran",
-            "Blinding Lights - The Weeknd",
-            "Someone Like You - Adele",
-            "Get Lucky - Daft Punk ft. Pharrell Williams",
-            "Happy - Pharrell Williams",
-            "Call Me Maybe - Carly Rae Jepsen",
-            "Gangnam Style - PSY",
-            "Despacito - Luis Fonsi & Daddy Yankee ft. Justin Bieber",
-            "Old Town Road - Lil Nas X ft. Billy Ray Cyrus",
-            "Bad Guy - Billie Eilish",
-            "Watermelon Sugar - Harry Styles",
-            "Levitating - Dua Lipa",
-            "Good 4 U - Olivia Rodrigo",
-            "Stay - The Kid LAROI & Justin Bieber",
-            "As It Was - Harry Styles",
-            "Anti-Hero - Taylor Swift",
-            "Flowers - Miley Cyrus",
-            "Last Nite - The Strokes",
-            "Mr. Brightside - The Killers",
-            "Take Me Out - Franz Ferdinand",
-            "Seven Nation Army - The White Stripes",
-            "Hey Ya! - OutKast",
-            "All My Friends - LCD Soundsystem",
-            "Cranes in the Sky - Solange",
-            "Alright - Kendrick Lamar",
-            "Redbone - Childish Gambino",
-            "Thinkin Bout You - Frank Ocean",
-            "Royals - Lorde",
-            "Chandelier - Sia",
-            "Formation - Beyoncé",
-            "This Is America - Childish Gambino",
-            "Thank U, Next - Ariana Grande",
-            "Juice - Lizzo",
-            "Adore You - Harry Styles",
-            "Don't Start Now - Dua Lipa",
-            "Save Your Tears - The Weeknd",
-            "Montero (Call Me By Your Name) - Lil Nas X",
-            "Drivers License - Olivia Rodrigo",
-            "Peaches - Justin Bieber ft. Daniel Caesar & Giveon",
-            "Kiss Me More - Doja Cat ft. SZA",
-            "Industry Baby - Lil Nas X & Jack Harlow",
-            "Easy On Me - Adele",
-            "Shivers - Ed Sheeran",
-            "Heat Waves - Glass Animals",
-            "Cold Heart (PNAU Remix) - Elton John & Dua Lipa",
-            "abcdefu - GAYLE",
-            "The Twist - Chubby Checker",
-            "Smooth - Santana ft. Rob Thomas",
-            "Mack the Knife - Bobby Darin",
-            "Party Rock Anthem - LMFAO ft. Lauren Bennett & GoonRock",
-            "I Gotta Feeling - The Black Eyed Peas",
-            "Macarena (Bayside Boys Mix) - Los Del Rio",
-            "Your Song - Elton John",
-            "Take on Me - A-ha",
-            // Other Songs
-            "Du Hast - Rammstein",
-            "I Wonder - Kanye West",
-            "Mama Im Coming Home - Ozzy Osbourne",
-            "Paranoid - Black Sabbath",
-            "Sonne - Rammstein",
-            "Stronger - Kanye West",
-            "War Pigs - Black Sabbath"
-    };
+    // AutoComplete HELP List
+    // Removed hardcoded SONGS array as per user request
 
     // SETTINGS
     private static final int MAX_ATTEMPTS = 5;
@@ -248,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView pointsText;
     private View progressBar;
 
-    private String correctAnswer = SONGS[0];
+    private String correctAnswer = "";
     private String[] attempts = new String[MAX_ATTEMPTS];
     private int currentAttempt = 0;
     private int playbackDuration = INITIAL_DURATION;
@@ -266,11 +69,6 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> receivedSongs = getIntent().getStringArrayListExtra("song_list");
         if (receivedSongs != null) {
             allSongsList = receivedSongs;
-        } else {
-            // Fallback to static list
-            for (String song : SONGS) {
-                allSongsList.add(song);
-            }
         }
 
         // Initialize views
