@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView[] answerTextViews;
     private EditText answerInput;
     private Button submitButton;
+    private Button skipButton;
     private TextView timeText;
     private TextView pointsText;
     private View progressBar;
@@ -117,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         playButton = findViewById(R.id.play_button);
         titleText = findViewById(R.id.title_text);
         submitButton = findViewById(R.id.submit_button);
+        skipButton = findViewById(R.id.skip_button);
         timeText = findViewById(R.id.time_text);
         pointsText = findViewById(R.id.points_text);
         progressBar = findViewById(R.id.progress_bar);
@@ -197,6 +199,12 @@ public class MainActivity extends AppCompatActivity {
         // Play button - uses current playback duration
         playButton.setOnClickListener(v -> {
             audioPlayer.playFragment(playbackDuration);
+        });
+
+        // Skip button
+        skipButton.setOnClickListener(v -> {
+            answerInput.setText("");
+            submitButton.performClick();
         });
 
         // Submit button

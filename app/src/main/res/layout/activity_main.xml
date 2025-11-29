@@ -164,7 +164,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progress_info_container" />
 
+    <!-- Skip Button -->
+
     <!-- Instruction Text -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/skip_button"
+        android:layout_width="72dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="48dp"
+        android:background="@drawable/pill_white_background"
+        android:paddingHorizontal="12dp"
+        android:text="Skip"
+        android:textAllCaps="false"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/play_button"
+        app:layout_constraintEnd_toStartOf="@+id/play_button"
+        app:layout_constraintTop_toTopOf="@+id/play_button" />
+
     <TextView
         android:id="@+id/play_instruction_text"
         android:layout_width="wrap_content"
