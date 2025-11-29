@@ -94,6 +94,9 @@ public class SelectChallengeActivity extends AppCompatActivity {
             if (currentSearchMode != SearchMode.ALL) {
                 resetSearchMode();
             } else {
+                Intent intent = new Intent(SelectChallengeActivity.this, WelcomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 finish();
             }
         });
@@ -359,7 +362,10 @@ public class SelectChallengeActivity extends AppCompatActivity {
         if (currentSearchMode != SearchMode.ALL) {
             resetSearchMode();
         } else {
-            super.onBackPressed();
+            Intent intent = new Intent(SelectChallengeActivity.this, WelcomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 }
