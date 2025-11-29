@@ -21,4 +21,9 @@
     <color name="colorNewBackgroundDark">#122017</color>
     <color name="colorSurfaceDark">#1a2c20</color>
 
+    <!-- Wordle Feedback Colors -->
+    <color name="wordle_correct">#4CAF50</color> <!-- Green -->
+    <color name="wordle_present">#FFC107</color> <!-- Amber/Yellow -->
+    <color name="wordle_absent">#9E9E9E</color>  <!-- Gray -->
+
 </resources>
