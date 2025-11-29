@@ -29,6 +29,9 @@ import com.example.melodino.utils.Levenshtein;
 import java.util.Objects;
 import java.util.Random;
 
+import android.os.Handler;
+import android.os.Looper;
+
 public class MainActivity extends AppCompatActivity {
 
     // AutoComplete HELP List
@@ -37,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
     // SETTINGS
     private static final int MAX_ATTEMPTS = 5;
-    private static final int INITIAL_DURATION = 1000; // 1 second
-    private static final double DURATION_INCREMENT = 1.6; // Multiply by 1.6 per failed attempt
-    private static final int TOTAL_SONG_DURATION = 15000; // 15 seconds total
-    private static final int MAX_POINTS = 5;
-    private static final int MIN_POINTS = 1;
+    // Hardcoded durations for each attempt: 2s, 8s, 16s, 30s, 30s
+    private static final int[] DURATIONS = { 2000, 8000, 16000, 30000, 30000 };
+    private static final int TOTAL_SONG_DURATION = 30000; // 30 seconds total
+    private static final int MAX_POINTS = 500; // Base max points
+    private static final int MIN_POINTS = 100;
 
     private AudioPlayer audioPlayer;
     private ImageButton playButton;
@@ -56,7 +59,12 @@ public class MainActivity extends AppCompatActivity {
     private String correctAnswer = "";
     private String[] attempts = new String[MAX_ATTEMPTS];
     private int currentAttempt = 0;
-    private int playbackDuration = INITIAL_DURATION;
+    private int playbackDuration = DURATIONS[0];
+    private long playbackStartTime = 0;
+
+    private Handler progressHandler = new Handler(Looper.getMainLooper());
+    private Runnable progressRunnable;
+    private long levelStartTime;
 
     private RecyclerView suggestionsRecyclerView;
     private SuggestionsAdapter suggestionsAdapter;
@@ -121,12 +129,27 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.answer_5_text)
         };
 
+        // Add click listeners to focus input
+        View.OnClickListener focusInputListener = v -> {
+            answerInput.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(answerInput, InputMethodManager.SHOW_IMPLICIT);
+            }
+        };
+
+        for (TextView tv : answerTextViews) {
+            tv.setOnClickListener(focusInputListener);
+        }
+
         // Initialize AudioPlayer
         // audioPlayer = new AudioPlayer(this, R.raw.song);
         // ***********************************************
 
         // Initialize AudioPlayer w random song
         setupRandomSong();
+
+        levelStartTime = System.currentTimeMillis();
 
         // Update progress bar and points initially
         updateProgressAndPoints();
@@ -136,11 +159,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlaybackStarted() {
                 playButton.setEnabled(false);
+                playbackStartTime = System.currentTimeMillis();
+                startProgressUpdater();
             }
 
             @Override
             public void onPlaybackStopped() {
                 playButton.setEnabled(true);
+                stopProgressUpdater();
+                updateProgressAndPoints(); // Reset to current duration state
             }
 
             @Override
@@ -220,16 +247,38 @@ public class MainActivity extends AppCompatActivity {
                 // add points to the intent
                 // WinActivity
                 Intent intent = new Intent(MainActivity.this, WinActivity.class);
-                intent.putExtra("EXTRA_SCORE", calculatePoints() * 100 + 100);
+
+                int baseScore = (MAX_ATTEMPTS - currentAttempt) * 100;
+
+                long actualTimePlayed = 0;
+                if (playbackStartTime > 0) {
+                    actualTimePlayed = System.currentTimeMillis() - playbackStartTime;
+                    // Cap at total duration
+                    actualTimePlayed = Math.min(actualTimePlayed, TOTAL_SONG_DURATION);
+                }
+
+                int songTimeBonus = (int) ((TOTAL_SONG_DURATION - actualTimePlayed) / 1000 * 10);
+
+                // Level completion bonus (if under 2 minutes)
+                long levelDuration = System.currentTimeMillis() - levelStartTime;
+                int levelTimeBonus = levelDuration < 120000 ? 500 : 0;
+
+                int totalScore = Math.max(MIN_POINTS, baseScore + songTimeBonus + levelTimeBonus);
+
+                intent.putExtra("EXTRA_SCORE", totalScore);
+                intent.putExtra("EXTRA_POINTS_BONUS", levelTimeBonus);
+                intent.putExtra("EXTRA_TIME_BONUS", (int) ((TOTAL_SONG_DURATION - actualTimePlayed) / 1000)); // Seconds
+                                                                                                              // saved
+
                 intent.putExtra("cover_url", getIntent().getStringExtra("cover_url"));
                 intent.putExtra("api_url", getIntent().getStringExtra("api_url"));
                 startActivity(intent);
 
             } else {
                 // Increment playback duration for next attempt
-                double adjustment = currentAttempt >= 1 ? currentAttempt * 1000 : 0;
-
-                playbackDuration = (int) Math.ceil(1000 * Math.pow(DURATION_INCREMENT, currentAttempt) + adjustment);
+                if (currentAttempt < MAX_ATTEMPTS) {
+                    playbackDuration = DURATIONS[currentAttempt];
+                }
 
                 // Update progress bar and points for next attempt
                 updateProgressAndPoints();
@@ -277,7 +326,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private int calculatePoints() {
-        return MAX_POINTS - currentAttempt;
+        int basePoints = (MAX_ATTEMPTS - currentAttempt) * 100;
+        // Bonus points for time saved: 10 points per second saved
+        int timeBonus = (TOTAL_SONG_DURATION - playbackDuration) / 1000 * 10;
+        return Math.max(MIN_POINTS, basePoints + timeBonus);
     }
 
     @Override
@@ -285,6 +337,42 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         if (audioPlayer != null) {
             audioPlayer.release();
+        }
+        stopProgressUpdater();
+    }
+
+    private void startProgressUpdater() {
+        final long startTime = System.currentTimeMillis();
+        final int duration = playbackDuration;
+
+        progressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = System.currentTimeMillis() - startTime;
+                float progress = Math.min((float) elapsed / TOTAL_SONG_DURATION, 1.0f);
+
+                // Update progress bar
+                int parentWidth = ((android.view.View) progressBar.getParent()).getWidth();
+                android.view.ViewGroup.LayoutParams params = progressBar.getLayoutParams();
+                params.width = (int) (parentWidth * progress);
+                progressBar.setLayoutParams(params);
+
+                // Update time text
+                int currentSeconds = (int) (elapsed / 1000);
+                int totalSeconds = TOTAL_SONG_DURATION / 1000;
+                timeText.setText(String.format("0:%02d / 0:%02d", currentSeconds, totalSeconds));
+
+                if (elapsed < duration) {
+                    progressHandler.postDelayed(this, 50);
+                }
+            }
+        };
+        progressHandler.post(progressRunnable);
+    }
+
+    private void stopProgressUpdater() {
+        if (progressRunnable != null) {
+            progressHandler.removeCallbacks(progressRunnable);
         }
     }
 
