@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Melodino">
         <activity
+            android:name=".SelectChallengeActivity"
+            android:exported="false" />
+        <activity
             android:name=".GameOverActivity"
             android:exported="false" />
         <activity
@@ -32,6 +35,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".LoadingActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
