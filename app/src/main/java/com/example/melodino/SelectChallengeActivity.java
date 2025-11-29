@@ -23,16 +23,16 @@ public class SelectChallengeActivity extends AppCompatActivity {
     private CardView challengeEdm;
     private CardView challengeHiphop;
     private CardView challenge80s;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_challenge);
-        
+
         // Initialize views
         backButton = findViewById(R.id.back_button);
         searchInput = findViewById(R.id.search_input);
-        
+
         challengeTop50 = findViewById(R.id.challenge_top50);
         challengeArtist = findViewById(R.id.challenge_artist);
         challengeGenre = findViewById(R.id.challenge_genre);
@@ -41,24 +41,26 @@ public class SelectChallengeActivity extends AppCompatActivity {
         challengeEdm = findViewById(R.id.challenge_edm);
         challengeHiphop = findViewById(R.id.challenge_hiphop);
         challenge80s = findViewById(R.id.challenge_80s);
-        
+
         // Back button
         backButton.setOnClickListener(v -> finish());
-        
+
         // Search functionality (basic implementation)
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO: Implement search filtering
             }
-            
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
-        
+
         // Challenge card click listeners
         challengeTop50.setOnClickListener(v -> startChallenge("Top 50"));
         challengeArtist.setOnClickListener(v -> startChallenge("By Artist"));
@@ -69,11 +71,16 @@ public class SelectChallengeActivity extends AppCompatActivity {
         challengeHiphop.setOnClickListener(v -> startChallenge("Hip-Hop"));
         challenge80s.setOnClickListener(v -> startChallenge("'80s"));
     }
-    
+
+    private static final String TOP_50_URL = "https://api.deezer.com/playlist/1111142221/tracks";
+
     private void startChallenge(String challengeName) {
         // Navigate to MainActivity with challenge type
         Intent intent = new Intent(SelectChallengeActivity.this, LoadingActivity.class);
         intent.putExtra("challenge_type", challengeName);
+        if (challengeName.equals("Top 50")) {
+            intent.putExtra("api_url", TOP_50_URL);
+        }
         startActivity(intent);
     }
 }

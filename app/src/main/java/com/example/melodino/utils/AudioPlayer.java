@@ -14,7 +14,9 @@ public class AudioPlayer {
 
     public interface OnPlaybackListener {
         void onPlaybackStarted();
+
         void onPlaybackStopped();
+
         void onPlaybackStateChanged(boolean isPlaying);
     }
 
@@ -22,6 +24,21 @@ public class AudioPlayer {
         this.context = context;
         this.handler = new Handler();
         this.mediaPlayer = MediaPlayer.create(context, audioResourceId);
+    }
+
+    public AudioPlayer(Context context, String url) {
+        this.context = context;
+        this.handler = new Handler();
+        this.mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync(); // Asynchronous prepare to avoid blocking UI thread
+            mediaPlayer.setOnPreparedListener(mp -> {
+                // Ready to play
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setOnPlaybackListener(OnPlaybackListener listener) {
@@ -54,7 +71,7 @@ public class AudioPlayer {
         }
     }
 
-    private void stopPlayback() {
+    public void stopPlayback() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             mediaPlayer.seekTo(0);

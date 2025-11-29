@@ -15,6 +15,8 @@ import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
 import java.util.concurrent.TimeUnit;
 
+import com.bumptech.glide.Glide;
+
 public class WinActivity extends AppCompatActivity {
 
     public static final String EXTRA_SCORE = "EXTRA_SCORE";
@@ -27,6 +29,7 @@ public class WinActivity extends AppCompatActivity {
     private Button shareButton;
     private Button playAgainButton;
     private Button mainMenuButton;
+    private ImageView dinoImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +43,18 @@ public class WinActivity extends AppCompatActivity {
         shareButton = findViewById(R.id.share_button);
         playAgainButton = findViewById(R.id.play_again_button);
         mainMenuButton = findViewById(R.id.main_menu_button);
+        dinoImage = findViewById(R.id.dino_image);
 
         // Get data from intent
         int score = getIntent().getIntExtra(EXTRA_SCORE, 0);
         int pointsBonus = getIntent().getIntExtra(EXTRA_POINTS_BONUS, 0);
         int timeBonus = getIntent().getIntExtra(EXTRA_TIME_BONUS, 0);
+        String coverUrl = getIntent().getStringExtra("cover_url");
+        String apiUrl = getIntent().getStringExtra("api_url");
+
+        if (coverUrl != null) {
+            Glide.with(this).load(coverUrl).into(dinoImage);
+        }
 
         // Display score with formatting
         scoreText.setText(String.format("%,d", score));
@@ -59,11 +69,19 @@ public class WinActivity extends AppCompatActivity {
 
         // Play again button
         playAgainButton.setOnClickListener(v -> {
-            // Go back to MainActivity
-            Intent intent = new Intent(WinActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            if (apiUrl != null) {
+                Intent intent = new Intent(WinActivity.this, LoadingActivity.class);
+                intent.putExtra("api_url", apiUrl);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            } else {
+                // Fallback to MainActivity if no API URL
+                Intent intent = new Intent(WinActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
         });
 
         // Main menu button
@@ -80,8 +98,7 @@ public class WinActivity extends AppCompatActivity {
         KonfettiView konfettiView = findViewById(R.id.konfettiView);
 
         Party party = new PartyFactory(
-                new Emitter(5, TimeUnit.SECONDS).max(score)
-        ).build();
+                new Emitter(5, TimeUnit.SECONDS).max(score)).build();
 
         konfettiView.start(party);
     }

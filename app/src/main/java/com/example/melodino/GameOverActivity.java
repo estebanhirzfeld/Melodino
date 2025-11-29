@@ -6,6 +6,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import android.widget.ImageView;
+
 public class GameOverActivity extends AppCompatActivity {
 
     public static final String EXTRA_CORRECT_ANSWER = "EXTRA_CORRECT_ANSWER";
@@ -14,6 +17,8 @@ public class GameOverActivity extends AppCompatActivity {
     private TextView correctAnswerText;
     private Button tryAgainButton;
     private Button mainMenuButton;
+    private ImageView sadDinoImage;
+    private ImageView correctAnswerImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +29,13 @@ public class GameOverActivity extends AppCompatActivity {
         correctAnswerText = findViewById(R.id.correct_answer_text);
         tryAgainButton = findViewById(R.id.try_again_button);
         mainMenuButton = findViewById(R.id.main_menu_button);
+        sadDinoImage = findViewById(R.id.sad_dino_image);
+        correctAnswerImage = findViewById(R.id.correct_answer_image);
 
         // Get data from intent with null safety
         String correctAnswer = getIntent().getStringExtra("correctAnswer");
+        String coverUrl = getIntent().getStringExtra("cover_url");
+        String apiUrl = getIntent().getStringExtra("api_url");
 
         if (correctAnswer != null && !correctAnswer.isEmpty()) {
             correctAnswerText.setText(correctAnswer);
@@ -34,14 +43,30 @@ public class GameOverActivity extends AppCompatActivity {
             correctAnswerText.setText("Answer not available");
         }
 
+        // Load album cover into the correct answer image, keep sad dino as is
+        if (coverUrl != null) {
+            Glide.with(this)
+                    .load(coverUrl)
+                    .placeholder(R.drawable.ic_music_note)
+                    .error(R.drawable.ic_music_note)
+                    .into(correctAnswerImage);
+        }
 
         // Try again button
         tryAgainButton.setOnClickListener(v -> {
-            // Go back to MainActivity
-            Intent intent = new Intent(GameOverActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            if (apiUrl != null) {
+                Intent intent = new Intent(GameOverActivity.this, LoadingActivity.class);
+                intent.putExtra("api_url", apiUrl);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            } else {
+                // Fallback to MainActivity
+                Intent intent = new Intent(GameOverActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
         });
 
         // Main menu button

@@ -22,12 +22,10 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    //AutoComplete HELP List
+    // AutoComplete HELP List
     private static final String[] SONGS = new String[] {
 
-
-
-            //Other
+            // Other
             "Mein Teil - Rammstein",
             "Ich Will - Rammstein",
             "Engel - Rammstein",
@@ -60,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             "Snowblind - Black Sabbath",
             "The Wizard - Black Sabbath",
 
-            //Michael Jackson Songs
+            // Michael Jackson Songs
             "Bad - Michael Jackson",
             "Billie Jean - Michael Jackson",
             "Thriller - Michael Jackson",
@@ -215,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
             "Macarena (Bayside Boys Mix) - Los Del Rio",
             "Your Song - Elton John",
             "Take on Me - A-ha",
-            //Other Songs
+            // Other Songs
             "Du Hast - Rammstein",
             "I Wonder - Kanye West",
             "Mama Im Coming Home - Ozzy Osbourne",
@@ -233,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int MAX_POINTS = 5;
     private static final int MIN_POINTS = 1;
 
-
     private AudioPlayer audioPlayer;
     private ImageButton playButton;
     private TextView titleText;
@@ -249,13 +246,12 @@ public class MainActivity extends AppCompatActivity {
     private int currentAttempt = 0;
     private int playbackDuration = INITIAL_DURATION;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //AutoComplete HELP List
+        // AutoComplete HELP List
         // Get a reference to the AutoCompleteTextView from the layout
         AutoCompleteTextView answerInput = findViewById(R.id.answer_input);
 
@@ -272,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
         pointsText = findViewById(R.id.points_text);
         progressBar = findViewById(R.id.progress_bar);
 
-        answerTextViews = new TextView[]{
+        answerTextViews = new TextView[] {
                 findViewById(R.id.answer_1_text),
                 findViewById(R.id.answer_2_text),
                 findViewById(R.id.answer_3_text),
@@ -280,11 +276,9 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.answer_5_text)
         };
 
-
-        
-
         // Initialize AudioPlayer
-        // audioPlayer = new AudioPlayer(this, R.raw.song); ***********************************************
+        // audioPlayer = new AudioPlayer(this, R.raw.song);
+        // ***********************************************
 
         // Initialize AudioPlayer w random song
         setupRandomSong();
@@ -325,6 +319,11 @@ public class MainActivity extends AppCompatActivity {
                 return; // Maximum attempts reached
             }
 
+            // Stop playback immediately
+            if (audioPlayer != null) {
+                audioPlayer.stopPlayback();
+            }
+
             String userAnswer = answerInput.getText().toString().trim().replace(",", "").replace("\"", "");
             if (userAnswer.isEmpty()) {
                 userAnswer = "Skipped"; // skipped
@@ -334,16 +333,15 @@ public class MainActivity extends AppCompatActivity {
             TextView currentTextView = answerTextViews[currentAttempt];
 
             // Check if answer is correct
-//            boolean isCorrect = correctAnswer.equalsIgnoreCase(userAnswer);
-//            boolean isCorrect = correctAnswer.toLowerCase().contains(userAnswer.toLowerCase());
+            // boolean isCorrect = correctAnswer.equalsIgnoreCase(userAnswer);
+            // boolean isCorrect =
+            // correctAnswer.toLowerCase().contains(userAnswer.toLowerCase());
 
-
-            //Levenshtein Algorithm
+            // Levenshtein Algorithm
             String correctAnswerTitle = correctAnswer.split(" - ")[0];
-            //Calc Levenshtein Distance
+            // Calc Levenshtein Distance
             int distance = Levenshtein.computeLevenshteinDistance(correctAnswerTitle, userAnswer);
             boolean isCorrect = distance <= 2 || correctAnswer.equalsIgnoreCase(userAnswer);
-
 
             // Update corresponding TextView
             if (userAnswer != null) {
@@ -352,14 +350,12 @@ public class MainActivity extends AppCompatActivity {
                 // Add strikethrough if incorrect
                 if (!isCorrect) {
                     currentTextView.setPaintFlags(
-                            currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
-                    );
+                            currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 }
             } else {
                 currentTextView.setText("Skipped");
                 currentTextView.setPaintFlags(
-                        currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
-                );
+                        currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
 
             currentAttempt++;
@@ -377,11 +373,12 @@ public class MainActivity extends AppCompatActivity {
                 playButton.setEnabled(false); // Disable play button on correct answer
                 submitButton.setEnabled(false); // Disable submit button
                 // add points to the intent
-                //WinActivity
+                // WinActivity
                 Intent intent = new Intent(MainActivity.this, WinActivity.class);
                 intent.putExtra("EXTRA_SCORE", calculatePoints() * 100 + 100);
+                intent.putExtra("cover_url", getIntent().getStringExtra("cover_url"));
+                intent.putExtra("api_url", getIntent().getStringExtra("api_url"));
                 startActivity(intent);
-
 
             } else {
                 // Increment playback duration for next attempt
@@ -401,6 +398,8 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
                     intent.putExtra("correctAnswer", correctAnswer);
+                    intent.putExtra("cover_url", getIntent().getStringExtra("cover_url"));
+                    intent.putExtra("api_url", getIntent().getStringExtra("api_url"));
                     startActivity(intent);
                 }
             }
@@ -445,32 +444,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupRandomSong() {
-        int[] songResources = {
-            R.raw.du_hast_rammstein,
-            R.raw.i_wonder_kanye_west, 
-            R.raw.mama_im_coming_home_ozzy_osbourne,
-            R.raw.paranoid_black_sabbath,
-            R.raw.sonne_rammstein,
-            R.raw.stronger_kanye_west,
-            R.raw.war_pigs_black_sabbath
-        };
-        
-        String[] songNames = {
-            "Du Hast - Rammstein",
-            "I Wonder - Kanye West",
-            "Mama Im Coming Home - Ozzy Osbourne",
-            "Paranoid - Black Sabbath",
-            "Sonne - Rammstein",
-            "Stronger - Kanye West",
-            "War Pigs - Black Sabbath"
-        };
-        
-        Random random = new Random();
-        int randomIndex = random.nextInt(songResources.length);
+        String songUrl = getIntent().getStringExtra("song_url");
+        String songTitle = getIntent().getStringExtra("correct_answer");
 
-        int currentSongResource = songResources[randomIndex];
-        correctAnswer = songNames[randomIndex];
-        
-        audioPlayer = new AudioPlayer(this, currentSongResource);
-}
+        if (songUrl != null && songTitle != null) {
+            correctAnswer = songTitle;
+            audioPlayer = new AudioPlayer(this, songUrl);
+        } else {
+            // Fallback to local resources if no URL provided (legacy support)
+            int[] songResources = {
+                    R.raw.du_hast_rammstein,
+                    R.raw.i_wonder_kanye_west,
+                    R.raw.mama_im_coming_home_ozzy_osbourne,
+                    R.raw.paranoid_black_sabbath,
+                    R.raw.sonne_rammstein,
+                    R.raw.stronger_kanye_west,
+                    R.raw.war_pigs_black_sabbath
+            };
+
+            String[] songNames = {
+                    "Du Hast - Rammstein",
+                    "I Wonder - Kanye West",
+                    "Mama Im Coming Home - Ozzy Osbourne",
+                    "Paranoid - Black Sabbath",
+                    "Sonne - Rammstein",
+                    "Stronger - Kanye West",
+                    "War Pigs - Black Sabbath"
+            };
+
+            Random random = new Random();
+            int randomIndex = random.nextInt(songResources.length);
+
+            int currentSongResource = songResources[randomIndex];
+            correctAnswer = songNames[randomIndex];
+
+            audioPlayer = new AudioPlayer(this, currentSongResource);
+        }
+    }
 }
