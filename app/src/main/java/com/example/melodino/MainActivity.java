@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlaybackStarted() {
                 playButton.setEnabled(false);
+                playButton.setAlpha(0.5f);
                 playbackStartTime = System.currentTimeMillis();
                 startProgressUpdater();
             }
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlaybackStopped() {
                 playButton.setEnabled(true);
+                playButton.setAlpha(1.0f);
                 stopProgressUpdater();
                 updateProgressAndPoints(); // Reset to current duration state
             }
@@ -177,6 +179,18 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     playButton.setImageResource(R.drawable.ic_play);
                 }
+            }
+
+            @Override
+            public void onAudioReady() {
+                playButton.setEnabled(true);
+                playButton.setAlpha(1.0f);
+            }
+
+            @Override
+            public void onAudioError(String message) {
+                Toast.makeText(MainActivity.this, "Error playing song: " + message, Toast.LENGTH_SHORT).show();
+                playButton.setEnabled(false);
             }
         });
 
@@ -381,7 +395,11 @@ public class MainActivity extends AppCompatActivity {
         String songTitle = getIntent().getStringExtra("correct_answer");
 
         if (songUrl != null && songTitle != null) {
+            android.util.Log.d("Melodino", "MainActivity Received Song URL: " + songUrl);
+            android.util.Log.d("Melodino", "MainActivity Received Title: " + songTitle);
             correctAnswer = songTitle;
+            playButton.setEnabled(false); // Disable until ready
+            playButton.setAlpha(0.5f);
             audioPlayer = new AudioPlayer(this, songUrl);
         } else {
             Toast.makeText(this, "No Internet connection", Toast.LENGTH_SHORT).show();

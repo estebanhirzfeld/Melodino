@@ -71,6 +71,13 @@ public class LoadingActivity extends AppCompatActivity {
 
                             // Navigate to MainActivity
                             Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
+
+                            // LOGGING
+                            android.util.Log.d("Melodino", "Selected Track: " + randomTrack.getTitle());
+                            android.util.Log.d("Melodino", "Artist: " + randomTrack.getArtist().getName());
+                            android.util.Log.d("Melodino", "Preview URL: " + randomTrack.getPreview());
+                            android.util.Log.d("Melodino", "Cover URL: " + randomTrack.getAlbum().getCoverMedium());
+
                             intent.putExtra("song_url", randomTrack.getPreview());
                             intent.putExtra("correct_answer",
                                     randomTrack.getTitle() + " - " + randomTrack.getArtist().getName());
