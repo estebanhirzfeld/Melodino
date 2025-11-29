@@ -7,7 +7,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.melodino.adapters.SuggestionsAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
+import java.util.ArrayList;
+import java.util.List;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -246,19 +253,57 @@ public class MainActivity extends AppCompatActivity {
     private int currentAttempt = 0;
     private int playbackDuration = INITIAL_DURATION;
 
+    private RecyclerView suggestionsRecyclerView;
+    private SuggestionsAdapter suggestionsAdapter;
+    private List<String> allSongsList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // AutoComplete HELP List
-        // Get a reference to the AutoCompleteTextView from the layout
-        AutoCompleteTextView answerInput = findViewById(R.id.answer_input);
+        // Get song list from intent
+        ArrayList<String> receivedSongs = getIntent().getStringArrayListExtra("song_list");
+        if (receivedSongs != null) {
+            allSongsList = receivedSongs;
+        } else {
+            // Fallback to static list
+            for (String song : SONGS) {
+                allSongsList.add(song);
+            }
+        }
 
-        // Create an adapter and set it to the AutoCompleteTextView
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, SONGS);
-        answerInput.setAdapter(adapter);
+        // Initialize views
+        answerInput = findViewById(R.id.answer_input);
+        suggestionsRecyclerView = findViewById(R.id.suggestions_recycler_view);
+
+        // Setup RecyclerView
+        suggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        suggestionsAdapter = new SuggestionsAdapter();
+        suggestionsRecyclerView.setAdapter(suggestionsAdapter);
+
+        // Handle item clicks
+        suggestionsAdapter.setOnItemClickListener(suggestion -> {
+            answerInput.setText(suggestion);
+            answerInput.setSelection(suggestion.length()); // Move cursor to end
+            suggestionsRecyclerView.setVisibility(View.GONE);
+        });
+
+        // TextWatcher for filtering
+        answerInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterSuggestions(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         // Initialize views
         playButton = findViewById(R.id.play_button);
@@ -479,6 +524,27 @@ public class MainActivity extends AppCompatActivity {
             correctAnswer = songNames[randomIndex];
 
             audioPlayer = new AudioPlayer(this, currentSongResource);
+        }
+    }
+
+    private void filterSuggestions(String query) {
+        if (query.isEmpty()) {
+            suggestionsRecyclerView.setVisibility(View.GONE);
+            return;
+        }
+
+        List<String> filteredList = new ArrayList<>();
+        for (String song : allSongsList) {
+            if (song.toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(song);
+            }
+        }
+
+        if (filteredList.isEmpty()) {
+            suggestionsRecyclerView.setVisibility(View.GONE);
+        } else {
+            suggestionsAdapter.setSuggestions(filteredList);
+            suggestionsRecyclerView.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -63,6 +63,12 @@ public class LoadingActivity extends AppCompatActivity {
                             Random random = new Random();
                             Track randomTrack = tracks.get(random.nextInt(tracks.size()));
 
+                            // Collect all songs for autocomplete
+                            java.util.ArrayList<String> allSongs = new java.util.ArrayList<>();
+                            for (Track track : tracks) {
+                                allSongs.add(track.getTitle() + " - " + track.getArtist().getName());
+                            }
+
                             // Navigate to MainActivity
                             Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
                             intent.putExtra("song_url", randomTrack.getPreview());
@@ -70,6 +76,7 @@ public class LoadingActivity extends AppCompatActivity {
                                     randomTrack.getTitle() + " - " + randomTrack.getArtist().getName());
                             intent.putExtra("cover_url", randomTrack.getAlbum().getCoverMedium());
                             intent.putExtra("api_url", url); // Pass API URL for "Play Again"
+                            intent.putStringArrayListExtra("song_list", allSongs); // Pass full list
                             startActivity(intent);
                             finish();
                         } else {

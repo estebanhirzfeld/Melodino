@@ -15,8 +15,6 @@ import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
 import java.util.concurrent.TimeUnit;
 
-import com.bumptech.glide.Glide;
-
 public class WinActivity extends AppCompatActivity {
 
     public static final String EXTRA_SCORE = "EXTRA_SCORE";
@@ -51,10 +49,6 @@ public class WinActivity extends AppCompatActivity {
         int timeBonus = getIntent().getIntExtra(EXTRA_TIME_BONUS, 0);
         String coverUrl = getIntent().getStringExtra("cover_url");
         String apiUrl = getIntent().getStringExtra("api_url");
-
-        if (coverUrl != null) {
-            Glide.with(this).load(coverUrl).into(dinoImage);
-        }
 
         // Display score with formatting
         scoreText.setText(String.format("%,d", score));
