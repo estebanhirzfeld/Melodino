@@ -12,15 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.melodino.adapters.SuggestionsAdapter;
 import android.text.Editable;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
-import androidx.core.content.ContextCompat;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -245,7 +243,13 @@ public class MainActivity extends AppCompatActivity {
 
             // Update corresponding TextView
             if (userAnswer != null) {
-                currentTextView.setText(getColoredGuess(userAnswer, correctAnswerTitle));
+                currentTextView.setText(userAnswer);
+
+                // Add strikethrough if incorrect
+                if (!isCorrect) {
+                    currentTextView.setPaintFlags(
+                            currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
             } else {
                 currentTextView.setText("Skipped");
                 currentTextView.setPaintFlags(
@@ -420,67 +424,59 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        List<String> filteredList = new ArrayList<>();
+        List<String> matches = new ArrayList<>();
         for (String song : allSongsList) {
             if (song.toLowerCase().contains(query.toLowerCase())) {
-                filteredList.add(song);
+                matches.add(song);
             }
         }
 
-        if (filteredList.isEmpty()) {
+        if (matches.isEmpty()) {
             suggestionsRecyclerView.setVisibility(View.GONE);
+            return;
+        }
+
+        // Dynamic Suggestion Reduction
+        // Attempt 0 (5 left): 6 + 12 = 18
+        // Attempt 4 (1 left): 6 + 0 = 6
+        int remainingAttempts = MAX_ATTEMPTS - currentAttempt;
+        int maxSuggestions = 6 + (remainingAttempts - 1) * 3;
+
+        List<String> finalSuggestions;
+
+        if (matches.size() <= maxSuggestions) {
+            finalSuggestions = matches;
         } else {
-            suggestionsAdapter.setSuggestions(filteredList);
-            suggestionsRecyclerView.setVisibility(View.VISIBLE);
-        }
-    }
+            finalSuggestions = new ArrayList<>();
+            boolean correctIncluded = false;
 
-    private SpannableString getColoredGuess(String guess, String correct) {
-        SpannableString spannable = new SpannableString(guess);
-        String guessUpper = guess.toUpperCase();
-        String correctUpper = correct.toUpperCase();
-
-        int[] colors = new int[guess.length()];
-        // Default to Gray (Absent)
-        int colorAbsent = ContextCompat.getColor(this, R.color.wordle_absent);
-        int colorPresent = ContextCompat.getColor(this, R.color.wordle_present);
-        int colorCorrect = ContextCompat.getColor(this, R.color.wordle_correct);
-
-        for (int i = 0; i < colors.length; i++) {
-            colors[i] = colorAbsent;
-        }
-
-        // Frequency map for correct answer
-        Map<Character, Integer> correctFreq = new HashMap<>();
-        for (char c : correctUpper.toCharArray()) {
-            correctFreq.put(c, correctFreq.getOrDefault(c, 0) + 1);
-        }
-
-        // First pass: Find exact matches (Green)
-        for (int i = 0; i < guess.length(); i++) {
-            if (i < correct.length() && guessUpper.charAt(i) == correctUpper.charAt(i)) {
-                colors[i] = colorCorrect;
-                char c = guessUpper.charAt(i);
-                correctFreq.put(c, correctFreq.get(c) - 1);
-            }
-        }
-
-        // Second pass: Find present but wrong position (Yellow)
-        for (int i = 0; i < guess.length(); i++) {
-            if (colors[i] != colorCorrect) { // Don't overwrite green
-                char c = guessUpper.charAt(i);
-                if (correctFreq.containsKey(c) && correctFreq.get(c) > 0) {
-                    colors[i] = colorPresent;
-                    correctFreq.put(c, correctFreq.get(c) - 1);
+            // 1. Always include correct answer if it matches
+            // We use the full title for checking
+            for (String match : matches) {
+                if (match.equalsIgnoreCase(correctAnswer)) {
+                    finalSuggestions.add(match);
+                    correctIncluded = true;
+                    break;
                 }
             }
+
+            // 2. Fill the rest with random matches
+            List<String> remainingMatches = new ArrayList<>(matches);
+            if (correctIncluded) {
+                remainingMatches.remove(correctAnswer);
+            }
+            Collections.shuffle(remainingMatches);
+
+            int slotsLeft = maxSuggestions - finalSuggestions.size();
+            for (int i = 0; i < slotsLeft && i < remainingMatches.size(); i++) {
+                finalSuggestions.add(remainingMatches.get(i));
+            }
         }
 
-        // Apply colors
-        for (int i = 0; i < guess.length(); i++) {
-            spannable.setSpan(new ForegroundColorSpan(colors[i]), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        // Sort alphabetically for better UX
+        Collections.sort(finalSuggestions);
 
-        return spannable;
+        suggestionsAdapter.setSuggestions(finalSuggestions);
+        suggestionsRecyclerView.setVisibility(View.VISIBLE);
     }
 }
