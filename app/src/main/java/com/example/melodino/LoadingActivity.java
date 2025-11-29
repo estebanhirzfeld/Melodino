@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.widget.Toast;
 import com.example.melodino.models.DeezerResponse;
 import com.example.melodino.models.Track;
-import com.example.melodino.utils.DeezerApiService;
+import com.example.melodino.api.DeezerApiService;
 import com.example.melodino.utils.RetrofitClient;
 import java.util.List;
 import java.util.Random;
@@ -51,10 +51,10 @@ public class LoadingActivity extends AppCompatActivity {
 
         executor.execute(() -> {
             DeezerApiService service = RetrofitClient.getClient().create(DeezerApiService.class);
-            Call<DeezerResponse> call = service.getPlaylistTracks(url);
+            Call<DeezerResponse<Track>> call = service.getPlaylistTracks(url);
 
             try {
-                Response<DeezerResponse> response = call.execute();
+                Response<DeezerResponse<Track>> response = call.execute();
                 handler.post(() -> {
                     if (response.isSuccessful() && response.body() != null) {
                         List<Track> tracks = response.body().getData();

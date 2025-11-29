@@ -2,10 +2,10 @@ package com.example.melodino.models;
 
 import java.util.List;
 
-public class DeezerResponse {
-    private List<Track> data;
+public class DeezerResponse<T> {
+    private List<T> data;
 
-    public List<Track> getData() {
+    public List<T> getData() {
         return data;
     }
 }

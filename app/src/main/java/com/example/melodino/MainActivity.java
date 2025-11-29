@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.melodino.utils.AudioPlayer;
@@ -294,34 +296,7 @@ public class MainActivity extends AppCompatActivity {
             correctAnswer = songTitle;
             audioPlayer = new AudioPlayer(this, songUrl);
         } else {
-            // Fallback to local resources if no URL provided (legacy support)
-            int[] songResources = {
-                    R.raw.du_hast_rammstein,
-                    R.raw.i_wonder_kanye_west,
-                    R.raw.mama_im_coming_home_ozzy_osbourne,
-                    R.raw.paranoid_black_sabbath,
-                    R.raw.sonne_rammstein,
-                    R.raw.stronger_kanye_west,
-                    R.raw.war_pigs_black_sabbath
-            };
-
-            String[] songNames = {
-                    "Du Hast - Rammstein",
-                    "I Wonder - Kanye West",
-                    "Mama Im Coming Home - Ozzy Osbourne",
-                    "Paranoid - Black Sabbath",
-                    "Sonne - Rammstein",
-                    "Stronger - Kanye West",
-                    "War Pigs - Black Sabbath"
-            };
-
-            Random random = new Random();
-            int randomIndex = random.nextInt(songResources.length);
-
-            int currentSongResource = songResources[randomIndex];
-            correctAnswer = songNames[randomIndex];
-
-            audioPlayer = new AudioPlayer(this, currentSongResource);
+            Toast.makeText(this, "No Internet connection", Toast.LENGTH_SHORT).show();
         }
     }
 

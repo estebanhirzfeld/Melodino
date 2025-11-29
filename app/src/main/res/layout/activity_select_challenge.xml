@@ -85,6 +85,27 @@
     </androidx.cardview.widget.CardView>
 
     <ScrollView
+        android:id="@+id/search_results_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/search_card"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/search_results_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/challenges_scroll_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -181,7 +202,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/challenge_genre"
+                android:id="@+id/challenge_playlist"
                 android:layout_width="0dp"
                 android:layout_height="200dp"  android:layout_columnWeight="1"
                 android:layout_margin="8dp"
@@ -211,7 +232,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="By Genre"
+                        android:text="By Playlist"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />

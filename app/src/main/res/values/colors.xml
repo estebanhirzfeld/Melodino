@@ -15,4 +15,10 @@
     <color name="colorBackgroundLight">#1E293B</color>
     <color name="colorBackgroundDark">#0F172A</color>
 
+    <!-- HTML Design Colors -->
+    <color name="colorNewPrimary">#39E079</color>
+    <color name="colorNewBackgroundLight">#f6f8f7</color>
+    <color name="colorNewBackgroundDark">#122017</color>
+    <color name="colorSurfaceDark">#1a2c20</color>
+
 </resources>

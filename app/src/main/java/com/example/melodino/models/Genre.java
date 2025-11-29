@@ -1,6 +1,6 @@
 package com.example.melodino.models;
 
-public class Artist {
+public class Genre {
     private long id;
     private String name;
     private String picture_medium;
