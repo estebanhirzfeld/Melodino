@@ -12,7 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.melodino.adapters.SuggestionsAdapter;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
+import androidx.core.content.ContextCompat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import android.widget.Button;
@@ -239,13 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Update corresponding TextView
             if (userAnswer != null) {
-                currentTextView.setText(userAnswer);
-
-                // Add strikethrough if incorrect
-                if (!isCorrect) {
-                    currentTextView.setPaintFlags(
-                            currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                }
+                currentTextView.setText(getColoredGuess(userAnswer, correctAnswerTitle));
             } else {
                 currentTextView.setText("Skipped");
                 currentTextView.setPaintFlags(
@@ -433,5 +433,54 @@ public class MainActivity extends AppCompatActivity {
             suggestionsAdapter.setSuggestions(filteredList);
             suggestionsRecyclerView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private SpannableString getColoredGuess(String guess, String correct) {
+        SpannableString spannable = new SpannableString(guess);
+        String guessUpper = guess.toUpperCase();
+        String correctUpper = correct.toUpperCase();
+
+        int[] colors = new int[guess.length()];
+        // Default to Gray (Absent)
+        int colorAbsent = ContextCompat.getColor(this, R.color.wordle_absent);
+        int colorPresent = ContextCompat.getColor(this, R.color.wordle_present);
+        int colorCorrect = ContextCompat.getColor(this, R.color.wordle_correct);
+
+        for (int i = 0; i < colors.length; i++) {
+            colors[i] = colorAbsent;
+        }
+
+        // Frequency map for correct answer
+        Map<Character, Integer> correctFreq = new HashMap<>();
+        for (char c : correctUpper.toCharArray()) {
+            correctFreq.put(c, correctFreq.getOrDefault(c, 0) + 1);
+        }
+
+        // First pass: Find exact matches (Green)
+        for (int i = 0; i < guess.length(); i++) {
+            if (i < correct.length() && guessUpper.charAt(i) == correctUpper.charAt(i)) {
+                colors[i] = colorCorrect;
+                char c = guessUpper.charAt(i);
+                correctFreq.put(c, correctFreq.get(c) - 1);
+            }
+        }
+
+        // Second pass: Find present but wrong position (Yellow)
+        for (int i = 0; i < guess.length(); i++) {
+            if (colors[i] != colorCorrect) { // Don't overwrite green
+                char c = guessUpper.charAt(i);
+                if (correctFreq.containsKey(c) && correctFreq.get(c) > 0) {
+                    colors[i] = colorPresent;
+                    correctFreq.put(c, correctFreq.get(c) - 1);
+                }
+            }
+        }
+
+        // Apply colors
+        for (int i = 0; i < guess.length(); i++) {
+            spannable.setSpan(new ForegroundColorSpan(colors[i]), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        return spannable;
     }
 }
