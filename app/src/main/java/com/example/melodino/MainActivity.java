@@ -7,11 +7,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.melodino.adapters.SuggestionsAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.melodino.utils.AudioPlayer;
@@ -20,219 +33,22 @@ import com.example.melodino.utils.Levenshtein;
 import java.util.Objects;
 import java.util.Random;
 
+import android.os.Handler;
+import android.os.Looper;
+
 public class MainActivity extends AppCompatActivity {
 
-    //AutoComplete HELP List
-    private static final String[] SONGS = new String[] {
-
-
-
-            //Other
-            "Mein Teil - Rammstein",
-            "Ich Will - Rammstein",
-            "Engel - Rammstein",
-            "Amerika - Rammstein",
-            "Feuer Frei! - Rammstein",
-            "Links 2 3 4 - Rammstein",
-            "Keine Lust - Rammstein",
-
-            "Gold Digger - Kanye West",
-            "Flashing Lights - Kanye West",
-            "Power - Kanye West",
-            "Heartless - Kanye West",
-            "All of the Lights - Kanye West",
-            "Black Skinhead - Kanye West",
-            "Bound 2 - Kanye West",
-
-            "Crazy Train - Ozzy Osbourne",
-            "Mr. Crowley - Ozzy Osbourne",
-            "No More Tears - Ozzy Osbourne",
-            "Bark at the Moon - Ozzy Osbourne",
-            "Flying High Again - Ozzy Osbourne",
-            "Over the Mountain - Ozzy Osbourne",
-            "Dreamer - Ozzy Osbourne",
-
-            "Iron Man - Black Sabbath",
-            "N.I.B. - Black Sabbath",
-            "Children of the Grave - Black Sabbath",
-            "Heaven and Hell - Black Sabbath",
-            "Sabbath Bloody Sabbath - Black Sabbath",
-            "Snowblind - Black Sabbath",
-            "The Wizard - Black Sabbath",
-
-            //Michael Jackson Songs
-            "Bad - Michael Jackson",
-            "Billie Jean - Michael Jackson",
-            "Thriller - Michael Jackson",
-            "Beat It - Michael Jackson",
-            "Smooth Criminal - Michael Jackson",
-            "Don't Stop 'Til You Get Enough - Michael Jackson",
-            "Man in the Mirror - Michael Jackson",
-            "The Way You Make Me Feel - Michael Jackson",
-            "Black or White - Michael Jackson",
-            "Rock with You - Michael Jackson",
-            "Wanna Be Startin' Somethin' - Michael Jackson",
-            "P.Y.T. (Pretty Young Thing) - Michael Jackson",
-            "Human Nature - Michael Jackson",
-            "They Don't Care About Us - Michael Jackson",
-            "Dirty Diana - Michael Jackson",
-            "Heal the World - Michael Jackson",
-            "Remember the Time - Michael Jackson",
-            "You Are Not Alone - Michael Jackson",
-            "Earth Song - Michael Jackson",
-            "Jam - Michael Jackson",
-            "Scream - Michael Jackson, Janet Jackson",
-            "You Rock My World - Michael Jackson",
-            "Leave Me Alone - Michael Jackson",
-            "Another Part of Me - Michael Jackson",
-            "The Girl Is Mine - Michael Jackson, Paul McCartney",
-            "Off the Wall - Michael Jackson",
-            "She's Out of My Life - Michael Jackson",
-            "In the Closet - Michael Jackson",
-            "Will You Be There - Michael Jackson",
-            "Give In to Me - Michael Jackson",
-            "I Want You Back - The Jackson 5",
-            "ABC - The Jackson 5",
-            "I'll Be There - The Jackson 5",
-            "The Love You Save - The Jackson 5",
-            "Never Can Say Goodbye - The Jackson 5",
-            "Dancing Machine - The Jackson 5",
-            "Blame It on the Boogie - The Jacksons",
-            "Shake Your Body (Down to the Ground) - The Jacksons",
-            "Can You Feel It - The Jacksons",
-            "Enjoy Yourself - The Jacksons",
-
-            // Twenty One Pilots Songs
-            "Ride - Twenty One Pilots",
-            "Stressed Out - Twenty One Pilots",
-            "Heathens - Twenty One Pilots",
-            "Chlorine - Twenty One Pilots",
-            "Car Radio - Twenty One Pilots",
-            "Tear in My Heart - Twenty One Pilots",
-            "My Blood - Twenty One Pilots",
-            "Jumpsuit - Twenty One Pilots",
-            "Heavydirtysoul - Twenty One Pilots",
-            "Lane Boy - Twenty One Pilots",
-            "Holding On To You - Twenty One Pilots",
-            "House of Gold - Twenty One Pilots",
-            "Guns for Hands - Twenty One Pilots",
-            "Migraine - Twenty One Pilots",
-            "Trees - Twenty One Pilots",
-            "Level of Concern - Twenty One Pilots",
-            "Shy Away - Twenty One Pilots",
-            "The Hype - Twenty One Pilots",
-            "Nico and the Niners - Twenty One Pilots",
-            "Goner - Twenty One Pilots",
-            "Leave The City - Twenty One Pilots",
-            "Neon Gravestones - Twenty One Pilots",
-            "Addict With a Pen - Twenty One Pilots",
-            "Truce - Twenty One Pilots",
-
-            // General Popular Songs
-            "Bohemian Rhapsody - Queen",
-            "Like a Rolling Stone - Bob Dylan",
-            "Smells Like Teen Spirit - Nirvana",
-            "Imagine - John Lennon",
-            "What's Going On - Marvin Gaye",
-            "Hey Jude - The Beatles",
-            "Good Vibrations - The Beach Boys",
-            "Johnny B. Goode - Chuck Berry",
-            "Stairway to Heaven - Led Zeppelin",
-            "Billie Jean - Michael Jackson",
-            "Hotel California - Eagles",
-            "Sweet Child O' Mine - Guns N' Roses",
-            "I Will Always Love You - Whitney Houston",
-            "Hallelujah - Leonard Cohen",
-            "Wonderwall - Oasis",
-            "Yesterday - The Beatles",
-            "Superstition - Stevie Wonder",
-            "(I Can't Get No) Satisfaction - The Rolling Stones",
-            "No Woman, No Cry - Bob Marley & The Wailers",
-            "Losing My Religion - R.E.M.",
-            "One - U2",
-            "Bridge Over Troubled Water - Simon & Garfunkel",
-            "God Only Knows - The Beach Boys",
-            "Respect - Aretha Franklin",
-            "Purple Haze - The Jimi Hendrix Experience",
-            "London Calling - The Clash",
-            "Born to Run - Bruce Springsteen",
-            "Be My Baby - The Ronettes",
-            "In Da Club - 50 Cent",
-            "Crazy in Love - Beyoncé ft. Jay-Z",
-            "Rolling in the Deep - Adele",
-            "Uptown Funk - Mark Ronson ft. Bruno Mars",
-            "Shape of You - Ed Sheeran",
-            "Blinding Lights - The Weeknd",
-            "Someone Like You - Adele",
-            "Get Lucky - Daft Punk ft. Pharrell Williams",
-            "Happy - Pharrell Williams",
-            "Call Me Maybe - Carly Rae Jepsen",
-            "Gangnam Style - PSY",
-            "Despacito - Luis Fonsi & Daddy Yankee ft. Justin Bieber",
-            "Old Town Road - Lil Nas X ft. Billy Ray Cyrus",
-            "Bad Guy - Billie Eilish",
-            "Watermelon Sugar - Harry Styles",
-            "Levitating - Dua Lipa",
-            "Good 4 U - Olivia Rodrigo",
-            "Stay - The Kid LAROI & Justin Bieber",
-            "As It Was - Harry Styles",
-            "Anti-Hero - Taylor Swift",
-            "Flowers - Miley Cyrus",
-            "Last Nite - The Strokes",
-            "Mr. Brightside - The Killers",
-            "Take Me Out - Franz Ferdinand",
-            "Seven Nation Army - The White Stripes",
-            "Hey Ya! - OutKast",
-            "All My Friends - LCD Soundsystem",
-            "Cranes in the Sky - Solange",
-            "Alright - Kendrick Lamar",
-            "Redbone - Childish Gambino",
-            "Thinkin Bout You - Frank Ocean",
-            "Royals - Lorde",
-            "Chandelier - Sia",
-            "Formation - Beyoncé",
-            "This Is America - Childish Gambino",
-            "Thank U, Next - Ariana Grande",
-            "Juice - Lizzo",
-            "Adore You - Harry Styles",
-            "Don't Start Now - Dua Lipa",
-            "Save Your Tears - The Weeknd",
-            "Montero (Call Me By Your Name) - Lil Nas X",
-            "Drivers License - Olivia Rodrigo",
-            "Peaches - Justin Bieber ft. Daniel Caesar & Giveon",
-            "Kiss Me More - Doja Cat ft. SZA",
-            "Industry Baby - Lil Nas X & Jack Harlow",
-            "Easy On Me - Adele",
-            "Shivers - Ed Sheeran",
-            "Heat Waves - Glass Animals",
-            "Cold Heart (PNAU Remix) - Elton John & Dua Lipa",
-            "abcdefu - GAYLE",
-            "The Twist - Chubby Checker",
-            "Smooth - Santana ft. Rob Thomas",
-            "Mack the Knife - Bobby Darin",
-            "Party Rock Anthem - LMFAO ft. Lauren Bennett & GoonRock",
-            "I Gotta Feeling - The Black Eyed Peas",
-            "Macarena (Bayside Boys Mix) - Los Del Rio",
-            "Your Song - Elton John",
-            "Take on Me - A-ha",
-            //Other Songs
-            "Du Hast - Rammstein",
-            "I Wonder - Kanye West",
-            "Mama Im Coming Home - Ozzy Osbourne",
-            "Paranoid - Black Sabbath",
-            "Sonne - Rammstein",
-            "Stronger - Kanye West",
-            "War Pigs - Black Sabbath"
-    };
+    // AutoComplete HELP List
+    // AutoComplete HELP List
+    // Removed hardcoded SONGS array as per user request
 
     // SETTINGS
     private static final int MAX_ATTEMPTS = 5;
-    private static final int INITIAL_DURATION = 1000; // 1 second
-    private static final double DURATION_INCREMENT = 1.6; // Multiply by 1.6 per failed attempt
-    private static final int TOTAL_SONG_DURATION = 15000; // 15 seconds total
-    private static final int MAX_POINTS = 5;
-    private static final int MIN_POINTS = 1;
-
+    // Hardcoded durations for each attempt: 2s, 8s, 16s, 30s, 30s
+    private static final int[] DURATIONS = { 2000, 8000, 16000, 30000, 30000 };
+    private static final int TOTAL_SONG_DURATION = 30000; // 30 seconds total
+    private static final int MAX_POINTS = 500; // Base max points
+    private static final int MIN_POINTS = 100;
 
     private AudioPlayer audioPlayer;
     private ImageButton playButton;
@@ -240,39 +56,78 @@ public class MainActivity extends AppCompatActivity {
     private TextView[] answerTextViews;
     private EditText answerInput;
     private Button submitButton;
+    private Button skipButton;
     private TextView timeText;
     private TextView pointsText;
     private View progressBar;
 
-    private String correctAnswer = SONGS[0];
+    private String correctAnswer = "";
     private String[] attempts = new String[MAX_ATTEMPTS];
     private int currentAttempt = 0;
-    private int playbackDuration = INITIAL_DURATION;
+    private int playbackDuration = DURATIONS[0];
+    private long playbackStartTime = 0;
 
+    private Handler progressHandler = new Handler(Looper.getMainLooper());
+    private Runnable progressRunnable;
+    private long levelStartTime;
+
+    private RecyclerView suggestionsRecyclerView;
+    private SuggestionsAdapter suggestionsAdapter;
+    private List<String> allSongsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //AutoComplete HELP List
-        // Get a reference to the AutoCompleteTextView from the layout
-        AutoCompleteTextView answerInput = findViewById(R.id.answer_input);
+        // Get song list from intent
+        ArrayList<String> receivedSongs = getIntent().getStringArrayListExtra("song_list");
+        if (receivedSongs != null) {
+            allSongsList = receivedSongs;
+        }
 
-        // Create an adapter and set it to the AutoCompleteTextView
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, SONGS);
-        answerInput.setAdapter(adapter);
+        // Initialize views
+        answerInput = findViewById(R.id.answer_input);
+        suggestionsRecyclerView = findViewById(R.id.suggestions_recycler_view);
+
+        // Setup RecyclerView
+        suggestionsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        suggestionsAdapter = new SuggestionsAdapter();
+        suggestionsRecyclerView.setAdapter(suggestionsAdapter);
+
+        // Handle item clicks
+        suggestionsAdapter.setOnItemClickListener(suggestion -> {
+            answerInput.setText(suggestion);
+            answerInput.setSelection(suggestion.length()); // Move cursor to end
+            suggestionsRecyclerView.setVisibility(View.GONE);
+        });
+
+        // TextWatcher for filtering
+        answerInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterSuggestions(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         // Initialize views
         playButton = findViewById(R.id.play_button);
         titleText = findViewById(R.id.title_text);
         submitButton = findViewById(R.id.submit_button);
+        skipButton = findViewById(R.id.skip_button);
         timeText = findViewById(R.id.time_text);
         pointsText = findViewById(R.id.points_text);
         progressBar = findViewById(R.id.progress_bar);
 
-        answerTextViews = new TextView[]{
+        answerTextViews = new TextView[] {
                 findViewById(R.id.answer_1_text),
                 findViewById(R.id.answer_2_text),
                 findViewById(R.id.answer_3_text),
@@ -280,14 +135,27 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.answer_5_text)
         };
 
+        // Add click listeners to focus input
+        View.OnClickListener focusInputListener = v -> {
+            answerInput.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(answerInput, InputMethodManager.SHOW_IMPLICIT);
+            }
+        };
 
-        
+        for (TextView tv : answerTextViews) {
+            tv.setOnClickListener(focusInputListener);
+        }
 
         // Initialize AudioPlayer
-        // audioPlayer = new AudioPlayer(this, R.raw.song); ***********************************************
+        // audioPlayer = new AudioPlayer(this, R.raw.song);
+        // ***********************************************
 
         // Initialize AudioPlayer w random song
         setupRandomSong();
+
+        levelStartTime = System.currentTimeMillis();
 
         // Update progress bar and points initially
         updateProgressAndPoints();
@@ -297,11 +165,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlaybackStarted() {
                 playButton.setEnabled(false);
+                playButton.setAlpha(0.5f);
+                playbackStartTime = System.currentTimeMillis();
+                startProgressUpdater();
             }
 
             @Override
             public void onPlaybackStopped() {
                 playButton.setEnabled(true);
+                playButton.setAlpha(1.0f);
+                stopProgressUpdater();
+                updateProgressAndPoints(); // Reset to current duration state
             }
 
             @Override
@@ -312,6 +186,18 @@ public class MainActivity extends AppCompatActivity {
                     playButton.setImageResource(R.drawable.ic_play);
                 }
             }
+
+            @Override
+            public void onAudioReady() {
+                playButton.setEnabled(true);
+                playButton.setAlpha(1.0f);
+            }
+
+            @Override
+            public void onAudioError(String message) {
+                Toast.makeText(MainActivity.this, "Error playing song: " + message, Toast.LENGTH_SHORT).show();
+                playButton.setEnabled(false);
+            }
         });
 
         // Play button - uses current playback duration
@@ -319,10 +205,21 @@ public class MainActivity extends AppCompatActivity {
             audioPlayer.playFragment(playbackDuration);
         });
 
+        // Skip button
+        skipButton.setOnClickListener(v -> {
+            answerInput.setText("");
+            submitButton.performClick();
+        });
+
         // Submit button
         submitButton.setOnClickListener(v -> {
             if (currentAttempt >= MAX_ATTEMPTS) {
                 return; // Maximum attempts reached
+            }
+
+            // Stop playback immediately
+            if (audioPlayer != null) {
+                audioPlayer.stopPlayback();
             }
 
             String userAnswer = answerInput.getText().toString().trim().replace(",", "").replace("\"", "");
@@ -334,16 +231,15 @@ public class MainActivity extends AppCompatActivity {
             TextView currentTextView = answerTextViews[currentAttempt];
 
             // Check if answer is correct
-//            boolean isCorrect = correctAnswer.equalsIgnoreCase(userAnswer);
-//            boolean isCorrect = correctAnswer.toLowerCase().contains(userAnswer.toLowerCase());
+            // boolean isCorrect = correctAnswer.equalsIgnoreCase(userAnswer);
+            // boolean isCorrect =
+            // correctAnswer.toLowerCase().contains(userAnswer.toLowerCase());
 
-
-            //Levenshtein Algorithm
+            // Levenshtein Algorithm
             String correctAnswerTitle = correctAnswer.split(" - ")[0];
-            //Calc Levenshtein Distance
+            // Calc Levenshtein Distance
             int distance = Levenshtein.computeLevenshteinDistance(correctAnswerTitle, userAnswer);
             boolean isCorrect = distance <= 2 || correctAnswer.equalsIgnoreCase(userAnswer);
-
 
             // Update corresponding TextView
             if (userAnswer != null) {
@@ -352,14 +248,12 @@ public class MainActivity extends AppCompatActivity {
                 // Add strikethrough if incorrect
                 if (!isCorrect) {
                     currentTextView.setPaintFlags(
-                            currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
-                    );
+                            currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 }
             } else {
                 currentTextView.setText("Skipped");
                 currentTextView.setPaintFlags(
-                        currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
-                );
+                        currentTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
 
             currentAttempt++;
@@ -377,17 +271,40 @@ public class MainActivity extends AppCompatActivity {
                 playButton.setEnabled(false); // Disable play button on correct answer
                 submitButton.setEnabled(false); // Disable submit button
                 // add points to the intent
-                //WinActivity
+                // WinActivity
                 Intent intent = new Intent(MainActivity.this, WinActivity.class);
-                intent.putExtra("EXTRA_SCORE", calculatePoints() * 100 + 100);
-                startActivity(intent);
 
+                int baseScore = (MAX_ATTEMPTS - currentAttempt) * 100;
+
+                long actualTimePlayed = 0;
+                if (playbackStartTime > 0) {
+                    actualTimePlayed = System.currentTimeMillis() - playbackStartTime;
+                    // Cap at total duration
+                    actualTimePlayed = Math.min(actualTimePlayed, TOTAL_SONG_DURATION);
+                }
+
+                int songTimeBonus = (int) ((TOTAL_SONG_DURATION - actualTimePlayed) / 1000 * 10);
+
+                // Level completion bonus (if under 2 minutes)
+                long levelDuration = System.currentTimeMillis() - levelStartTime;
+                int levelTimeBonus = levelDuration < 120000 ? 500 : 0;
+
+                int totalScore = Math.max(MIN_POINTS, baseScore + songTimeBonus + levelTimeBonus);
+
+                intent.putExtra("EXTRA_SCORE", totalScore);
+                intent.putExtra("EXTRA_POINTS_BONUS", levelTimeBonus);
+                intent.putExtra("EXTRA_TIME_BONUS", (int) ((TOTAL_SONG_DURATION - actualTimePlayed) / 1000)); // Seconds
+                                                                                                              // saved
+
+                intent.putExtra("cover_url", getIntent().getStringExtra("cover_url"));
+                intent.putExtra("api_url", getIntent().getStringExtra("api_url"));
+                startActivity(intent);
 
             } else {
                 // Increment playback duration for next attempt
-                double adjustment = currentAttempt >= 1 ? currentAttempt * 1000 : 0;
-
-                playbackDuration = (int) Math.ceil(1000 * Math.pow(DURATION_INCREMENT, currentAttempt) + adjustment);
+                if (currentAttempt < MAX_ATTEMPTS) {
+                    playbackDuration = DURATIONS[currentAttempt];
+                }
 
                 // Update progress bar and points for next attempt
                 updateProgressAndPoints();
@@ -401,6 +318,8 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
                     intent.putExtra("correctAnswer", correctAnswer);
+                    intent.putExtra("cover_url", getIntent().getStringExtra("cover_url"));
+                    intent.putExtra("api_url", getIntent().getStringExtra("api_url"));
                     startActivity(intent);
                 }
             }
@@ -433,7 +352,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private int calculatePoints() {
-        return MAX_POINTS - currentAttempt;
+        int basePoints = (MAX_ATTEMPTS - currentAttempt) * 100;
+        // Bonus points for time saved: 10 points per second saved
+        int timeBonus = (TOTAL_SONG_DURATION - playbackDuration) / 1000 * 10;
+        return Math.max(MIN_POINTS, basePoints + timeBonus);
     }
 
     @Override
@@ -442,35 +364,119 @@ public class MainActivity extends AppCompatActivity {
         if (audioPlayer != null) {
             audioPlayer.release();
         }
+        stopProgressUpdater();
+    }
+
+    private void startProgressUpdater() {
+        final long startTime = System.currentTimeMillis();
+        final int duration = playbackDuration;
+
+        progressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = System.currentTimeMillis() - startTime;
+                float progress = Math.min((float) elapsed / TOTAL_SONG_DURATION, 1.0f);
+
+                // Update progress bar
+                int parentWidth = ((android.view.View) progressBar.getParent()).getWidth();
+                android.view.ViewGroup.LayoutParams params = progressBar.getLayoutParams();
+                params.width = (int) (parentWidth * progress);
+                progressBar.setLayoutParams(params);
+
+                // Update time text
+                int currentSeconds = (int) (elapsed / 1000);
+                int totalSeconds = TOTAL_SONG_DURATION / 1000;
+                timeText.setText(String.format("0:%02d / 0:%02d", currentSeconds, totalSeconds));
+
+                if (elapsed < duration) {
+                    progressHandler.postDelayed(this, 50);
+                }
+            }
+        };
+        progressHandler.post(progressRunnable);
+    }
+
+    private void stopProgressUpdater() {
+        if (progressRunnable != null) {
+            progressHandler.removeCallbacks(progressRunnable);
+        }
     }
 
     private void setupRandomSong() {
-        int[] songResources = {
-            R.raw.du_hast_rammstein,
-            R.raw.i_wonder_kanye_west, 
-            R.raw.mama_im_coming_home_ozzy_osbourne,
-            R.raw.paranoid_black_sabbath,
-            R.raw.sonne_rammstein,
-            R.raw.stronger_kanye_west,
-            R.raw.war_pigs_black_sabbath
-        };
-        
-        String[] songNames = {
-            "Du Hast - Rammstein",
-            "I Wonder - Kanye West",
-            "Mama Im Coming Home - Ozzy Osbourne",
-            "Paranoid - Black Sabbath",
-            "Sonne - Rammstein",
-            "Stronger - Kanye West",
-            "War Pigs - Black Sabbath"
-        };
-        
-        Random random = new Random();
-        int randomIndex = random.nextInt(songResources.length);
+        String songUrl = getIntent().getStringExtra("song_url");
+        String songTitle = getIntent().getStringExtra("correct_answer");
 
-        int currentSongResource = songResources[randomIndex];
-        correctAnswer = songNames[randomIndex];
-        
-        audioPlayer = new AudioPlayer(this, currentSongResource);
-}
+        if (songUrl != null && songTitle != null) {
+            android.util.Log.d("Melodino", "MainActivity Received Song URL: " + songUrl);
+            android.util.Log.d("Melodino", "MainActivity Received Title: " + songTitle);
+            correctAnswer = songTitle;
+            playButton.setEnabled(false); // Disable until ready
+            playButton.setAlpha(0.5f);
+            audioPlayer = new AudioPlayer(this, songUrl);
+        } else {
+            Toast.makeText(this, "No Internet connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void filterSuggestions(String query) {
+        if (query.isEmpty()) {
+            suggestionsRecyclerView.setVisibility(View.GONE);
+            return;
+        }
+
+        List<String> matches = new ArrayList<>();
+        for (String song : allSongsList) {
+            if (song.toLowerCase().contains(query.toLowerCase())) {
+                matches.add(song);
+            }
+        }
+
+        if (matches.isEmpty()) {
+            suggestionsRecyclerView.setVisibility(View.GONE);
+            return;
+        }
+
+        // Dynamic Suggestion Reduction
+        // Attempt 0 (5 left): 6 + 12 = 18
+        // Attempt 4 (1 left): 6 + 0 = 6
+        int remainingAttempts = MAX_ATTEMPTS - currentAttempt;
+        int maxSuggestions = 6 + (remainingAttempts - 1) * 3;
+
+        List<String> finalSuggestions;
+
+        if (matches.size() <= maxSuggestions) {
+            finalSuggestions = matches;
+        } else {
+            finalSuggestions = new ArrayList<>();
+            boolean correctIncluded = false;
+
+            // 1. Always include correct answer if it matches
+            // We use the full title for checking
+            for (String match : matches) {
+                if (match.equalsIgnoreCase(correctAnswer)) {
+                    finalSuggestions.add(match);
+                    correctIncluded = true;
+                    break;
+                }
+            }
+
+            // 2. Fill the rest with random matches
+            List<String> remainingMatches = new ArrayList<>(matches);
+            if (correctIncluded) {
+                remainingMatches.remove(correctAnswer);
+            }
+            Collections.shuffle(remainingMatches);
+
+            int slotsLeft = maxSuggestions - finalSuggestions.size();
+            for (int i = 0; i < slotsLeft && i < remainingMatches.size(); i++) {
+                finalSuggestions.add(remainingMatches.get(i));
+            }
+        }
+
+        // Sort alphabetically for better UX
+        Collections.sort(finalSuggestions);
+
+        suggestionsAdapter.setSuggestions(finalSuggestions);
+        suggestionsRecyclerView.setVisibility(View.VISIBLE);
+    }
 }

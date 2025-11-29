@@ -4,6 +4,7 @@
     <color name="colorPrimary">#4ADE80</color>
     <color name="colorPrimary50">#804ADE80</color>
     <color name="colorPrimary30">#4D4ADE80</color>
+    <color name="colorPrimary60">#994ADE80</color>
     <color name="colorPrimary20">#334ADE80</color>
     <color name="transparent">#00000000</color>
     <color name="white">#FFFFFF</color>
@@ -13,5 +14,11 @@
     <!-- NEW BACKGROUND COLORS -->
     <color name="colorBackgroundLight">#1E293B</color>
     <color name="colorBackgroundDark">#0F172A</color>
+
+    <!-- HTML Design Colors -->
+    <color name="colorNewPrimary">#39E079</color>
+    <color name="colorNewBackgroundLight">#f6f8f7</color>
+    <color name="colorNewBackgroundDark">#122017</color>
+    <color name="colorSurfaceDark">#1a2c20</color>
 
 </resources>

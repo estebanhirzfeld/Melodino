@@ -3,14 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackgroundDark"
     android:padding="16dp"
-    android:id="@+id/main"
-    android:background="@color/colorBackgroundLight"
     tools:context=".MainActivity">
 
-    <!-- Guidelines -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_start"
         android:layout_width="wrap_content"
@@ -25,26 +24,24 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="16dp" />
 
-    <!-- Title -->
     <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Can you guess the song?"
         android:textColor="@color/white"
-        android:textStyle="bold"
         android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/answer_1_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Answer options in vertical chain -->
     <TextView
         android:id="@+id/answer_1_text"
         style="@style/AnswerTextViewStyle"
-        android:text="[ . . . ]"
         android:layout_marginHorizontal="12dp"
+        android:text="[ . . . ]"
         app:layout_constraintBottom_toTopOf="@+id/answer_2_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -87,15 +84,14 @@
     <TextView
         android:id="@+id/answer_5_text"
         style="@style/AnswerTextViewStyle"
-        android:layout_marginHorizontal="12dp"
         android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="12dp"
         android:text="[ . . . ]"
         app:layout_constraintBottom_toTopOf="@+id/play_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/answer_4_text" />
 
-    <!-- Progress Info Container -->
     <LinearLayout
         android:id="@+id/progress_info_container"
         android:layout_width="0dp"
@@ -103,23 +99,22 @@
         android:layout_marginTop="40dp"
         android:layout_marginHorizontal="16dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/answer_5_text"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/answer_5_text">
 
-        <!-- Time and Points Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/time_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="0:01 / 0:15"
+                android:text="0:01 / 0:30"
                 android:textColor="@color/white50"
                 android:textSize="12sp" />
 
@@ -132,13 +127,11 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <!-- Progress Bar Background -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="8dp"
             android:background="@drawable/progress_bar_background">
 
-            <!-- Progress Bar Foreground -->
             <View
                 android:id="@+id/progress_bar"
                 android:layout_width="0dp"
@@ -147,7 +140,6 @@
         </FrameLayout>
     </LinearLayout>
 
-    <!-- Play Button -->
     <ImageButton
         android:id="@+id/play_button"
         android:layout_width="64dp"
@@ -164,28 +156,63 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progress_info_container" />
 
-    <!-- Instruction Text -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/skip_button"
+        android:layout_width="72dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="48dp"
+        android:background="@drawable/pill_white_background"
+        android:paddingHorizontal="12dp"
+        android:text="Skip"
+        android:textAllCaps="false"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/play_button"
+        app:layout_constraintEnd_toStartOf="@+id/play_button"
+        app:layout_constraintTop_toTopOf="@+id/play_button" />
+
     <TextView
         android:id="@+id/play_instruction_text"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="24dp"
         android:text="Turn up the volume and tap to start the track!"
         android:textAlignment="center"
         android:textColor="@color/white50"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/answer_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play_button" />
+        app:layout_constraintTop_toBottomOf="@+id/play_button"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <!-- Answer input and submit button -->
-    <AutoCompleteTextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/suggestions_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/rounded_white_background"
+        android:elevation="10dp"
+        android:translationZ="10dp"
+        android:visibility="gone"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintHeight_max="250dp"
+        app:layout_constraintBottom_toTopOf="@+id/answer_input"
+        app:layout_constraintEnd_toEndOf="@+id/submit_button"
+        app:layout_constraintStart_toStartOf="@+id/answer_input"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_suggestion"
+        tools:visibility="visible" />
+
+    <EditText
         android:id="@+id/answer_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/edittext_background_selector"
         android:elevation="4dp"
         android:hint="Type your answer here..."
@@ -196,30 +223,20 @@
         android:textColorHint="@color/white50"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/submit_button"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play_instruction_text"
-        app:layout_constraintVertical_bias="0.919"
-
-
-        />
+        app:layout_constraintStart_toStartOf="@+id/guideline_start" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/submit_button"
-        android:layout_width="109dp"
-        android:layout_height="55dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:background="@drawable/submit_button_background"
         android:elevation="4dp"
-        android:paddingStart="24dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="12dp"
+        android:paddingHorizontal="24dp"
         android:text="SUBMIT"
         android:textColor="@color/colorBackgroundDark"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/answer_input"
-        app:layout_constraintEnd_toStartOf="@+id/guideline_end"
-        app:layout_constraintTop_toTopOf="@+id/answer_input"
-        app:layout_constraintVertical_bias="0.333" />
+        app:layout_constraintEnd_toEndOf="@+id/guideline_end"
+        app:layout_constraintTop_toTopOf="@+id/answer_input" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

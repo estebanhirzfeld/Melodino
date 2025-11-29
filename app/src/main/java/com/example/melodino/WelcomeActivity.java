@@ -70,8 +70,14 @@ public class WelcomeActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putString(KEY_PLAYER_NAME, playerName).apply();
 
-        // Navigate to MainActivity
-        Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+//        // Navigate to MainActivity
+//        Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+//        intent.putExtra("player_name", playerName);
+//        startActivity(intent);
+//        finish();
+
+        // Navigate to SelectChallengeActivity
+        Intent intent = new Intent(WelcomeActivity.this, SelectChallengeActivity.class);
         intent.putExtra("player_name", playerName);
         startActivity(intent);
         finish();
