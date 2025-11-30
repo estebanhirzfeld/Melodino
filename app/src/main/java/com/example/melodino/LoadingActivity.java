@@ -74,39 +74,64 @@ public class LoadingActivity extends AppCompatActivity {
                                 return;
                             }
 
-                            // Shuffle and pick 5
-                            java.util.Collections.shuffle(validTracks);
-                            List<Track> selectedTracks = validTracks.subList(0, 5);
+                            String gameMode = getIntent().getStringExtra("GAME_MODE");
+                            if (gameMode == null)
+                                gameMode = "SURVIVAL"; // Default
 
-                            // Prepare data for GameActivity
-                            java.util.ArrayList<String> songUrls = new java.util.ArrayList<>();
-                            java.util.ArrayList<String> correctAnswers = new java.util.ArrayList<>();
-                            java.util.ArrayList<String> coverUrls = new java.util.ArrayList<>();
-                            java.util.ArrayList<String> allSongs = new java.util.ArrayList<>();
+                            if (gameMode.equals("CLASSIC")) {
+                                // Classic Mode: Pick 1 random song
+                                java.util.Collections.shuffle(validTracks);
+                                Track selectedTrack = validTracks.get(0);
 
-                            for (Track track : selectedTracks) {
-                                songUrls.add(track.getPreview());
-                                correctAnswers.add(track.getTitle() + " - " + track.getArtist().getName());
-                                coverUrls.add(track.getAlbum().getCoverMedium());
+                                // Collect all songs for autocomplete
+                                java.util.ArrayList<String> allSongs = new java.util.ArrayList<>();
+                                for (Track track : tracks) {
+                                    allSongs.add(track.getTitle() + " - " + track.getArtist().getName());
+                                }
+
+                                Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
+                                intent.putExtra("song_url", selectedTrack.getPreview());
+                                intent.putExtra("correct_answer",
+                                        selectedTrack.getTitle() + " - " + selectedTrack.getArtist().getName());
+                                intent.putExtra("cover_url", selectedTrack.getAlbum().getCoverMedium());
+                                intent.putStringArrayListExtra("song_list", allSongs);
+                                intent.putExtra("api_url", url);
+                                startActivity(intent);
+                                finish();
+
+                            } else {
+                                // Survival Mode: Pick 5 songs
+                                java.util.Collections.shuffle(validTracks);
+                                List<Track> selectedTracks = validTracks.subList(0, 5);
+
+                                java.util.ArrayList<String> songUrls = new java.util.ArrayList<>();
+                                java.util.ArrayList<String> correctAnswers = new java.util.ArrayList<>();
+                                java.util.ArrayList<String> coverUrls = new java.util.ArrayList<>();
+                                java.util.ArrayList<String> allSongs = new java.util.ArrayList<>();
+
+                                for (Track track : selectedTracks) {
+                                    songUrls.add(track.getPreview());
+                                    correctAnswers.add(track.getTitle() + " - " + track.getArtist().getName());
+                                    coverUrls.add(track.getAlbum().getCoverMedium());
+                                }
+
+                                for (Track track : tracks) {
+                                    allSongs.add(track.getTitle() + " - " + track.getArtist().getName());
+                                }
+
+                                Intent intent = new Intent(LoadingActivity.this, GameActivity.class);
+                                intent.putStringArrayListExtra("song_urls", songUrls);
+                                intent.putStringArrayListExtra("correct_answers", correctAnswers);
+                                intent.putStringArrayListExtra("cover_urls", coverUrls);
+                                intent.putStringArrayListExtra("all_songs", allSongs);
+                                intent.putExtra("api_url", url);
+                                intent.putExtra("challenge_type", getIntent().getStringExtra("challenge_type"));
+                                intent.putExtra("challenge_subtitle", getIntent().getStringExtra("challenge_subtitle"));
+
+                                startActivity(intent);
+                                finish();
                             }
 
-                            // Collect all songs for autocomplete (from original full list)
-                            for (Track track : tracks) {
-                                allSongs.add(track.getTitle() + " - " + track.getArtist().getName());
-                            }
-
-                            // Navigate to GameActivity
-                            Intent intent = new Intent(LoadingActivity.this, GameActivity.class);
-                            intent.putStringArrayListExtra("song_urls", songUrls);
-                            intent.putStringArrayListExtra("correct_answers", correctAnswers);
-                            intent.putStringArrayListExtra("cover_urls", coverUrls);
-                            intent.putStringArrayListExtra("all_songs", allSongs);
-                            intent.putExtra("api_url", url);
-                            intent.putExtra("challenge_type", getIntent().getStringExtra("challenge_type"));
-                            intent.putExtra("challenge_subtitle", getIntent().getStringExtra("challenge_subtitle"));
-
-                            startActivity(intent);
-                            finish();
                         } else {
                             Toast.makeText(LoadingActivity.this, "No tracks found", Toast.LENGTH_SHORT).show();
                             finish();

@@ -14,6 +14,7 @@
 
     <color name="colorBackgroundLight">#1E293B</color>
     <color name="colorBackgroundDark">#0F172A</color>
+    <color name="colorAccentGlow">#9333ea</color>
 
     <!-- Visualizer Colors -->
     <color name="visBlue">#60a5fa</color>

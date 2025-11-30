@@ -467,11 +467,14 @@ public class SelectChallengeActivity extends AppCompatActivity {
         recentlyPlayedManager.addRecentlyPlayed(
                 new RecentlyPlayedManager.RecentlyPlayedItem(challengeName, subtitle, apiUrl, imageUrl));
 
-        Intent intent = new Intent(SelectChallengeActivity.this, LoadingActivity.class);
+        Intent intent = new Intent(SelectChallengeActivity.this, ChooseModeActivity.class);
         intent.putExtra("challenge_type", challengeName);
         intent.putExtra("challenge_subtitle", subtitle);
         if (apiUrl != null) {
             intent.putExtra("api_url", apiUrl);
+        }
+        if (imageUrl != null) {
+            intent.putExtra("image_url", imageUrl);
         }
         startActivity(intent);
     }
