@@ -90,6 +90,10 @@ public class AudioPlayer {
                 Toast.makeText(context, "Audio loading...", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            // Cancel any pending stop commands
+            handler.removeCallbacksAndMessages(null);
+
             // Stop if already playing
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
@@ -115,6 +119,9 @@ public class AudioPlayer {
     }
 
     public void stopPlayback() {
+        // Cancel any pending stop commands
+        handler.removeCallbacksAndMessages(null);
+
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             mediaPlayer.seekTo(0);

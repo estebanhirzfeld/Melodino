@@ -10,9 +10,17 @@
     <color name="white">#FFFFFF</color>
     <color name="white50">#80FFFFFF</color>
     <color name="colorError">#ff4d4d</color>
+    <color name="black">#000000</color>
 
     <color name="colorBackgroundLight">#1E293B</color>
     <color name="colorBackgroundDark">#0F172A</color>
+
+    <!-- Visualizer Colors -->
+    <color name="visBlue">#60a5fa</color>
+    <color name="visIndigo">#818cf8</color>
+    <color name="visPurple">#a78bfa</color>
+    <color name="visPink">#c084fc</color>
+    <color name="visGreen">#4ade80</color>
 
 
 
