@@ -32,6 +32,7 @@ import com.example.melodino.utils.Levenshtein;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.example.melodino.ui.RoundCompleteActivity;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -58,6 +59,12 @@ public class GameActivity extends AppCompatActivity {
     private ArrayList<String> allSongsList;
     private String apiUrl;
     private String challengeType;
+    private boolean isRoundMode = true;
+
+    // Stats
+    private int correctGuesses = 0;
+    private int x2UsedCount = 0;
+    private long startTimeMs;
 
     private int currentSongIndex = 0;
     private int lives = MAX_LIVES;
@@ -113,7 +120,10 @@ public class GameActivity extends AppCompatActivity {
         allSongsList = intent.getStringArrayListExtra("all_songs");
         apiUrl = intent.getStringExtra("api_url");
         challengeType = intent.getStringExtra("challenge_type");
+        // isRoundMode defaults to true for GameActivity
         String challengeSubtitle = intent.getStringExtra("challenge_subtitle");
+
+        startTimeMs = System.currentTimeMillis();
 
         if (songUrls == null || songUrls.size() < TOTAL_SONGS) {
             Toast.makeText(this, "Error loading game data", Toast.LENGTH_SHORT).show();
@@ -297,9 +307,12 @@ public class GameActivity extends AppCompatActivity {
         skipButton.setEnabled(false);
 
         int points = 100;
-        if (isX2Active)
+        if (isX2Active) {
             points *= 2;
+            x2UsedCount++;
+        }
         score += points;
+        correctGuesses++;
 
         Toast.makeText(this, "Correct! + " + points, Toast.LENGTH_SHORT).show();
         new Handler(Looper.getMainLooper()).postDelayed(this::nextLevel, 1500);
@@ -394,7 +407,14 @@ public class GameActivity extends AppCompatActivity {
         updateX2ButtonState(); // Check if button should hide
 
         if (lives <= 0) {
-            gameOver();
+            if (isRoundMode) {
+                // In Round Mode, we don't game over, just continue or reset lives?
+                // Assuming infinite lives or just ignore death.
+                lives = 1; // Keep alive
+                updateHearts();
+            } else {
+                gameOver();
+            }
         } else {
             isX2Active = false;
             updateX2ButtonState();
@@ -431,7 +451,11 @@ public class GameActivity extends AppCompatActivity {
         if (currentSongIndex < TOTAL_SONGS - 1) {
             startLevel(currentSongIndex + 1);
         } else {
-            gameWin();
+            if (isRoundMode) {
+                roundComplete();
+            } else {
+                gameWin();
+            }
         }
     }
 
@@ -485,5 +509,22 @@ public class GameActivity extends AppCompatActivity {
         }
         stopTimer();
         stopPulsating();
+    }
+
+    private void roundComplete() {
+        long totalTimeSeconds = (System.currentTimeMillis() - startTimeMs) / 1000;
+        String timeString = String.format("%dm %ds", totalTimeSeconds / 60, totalTimeSeconds % 60);
+
+        Intent intent = new Intent(this, RoundCompleteActivity.class);
+        intent.putExtra(RoundCompleteActivity.EXTRA_SCORE, score);
+        intent.putExtra(RoundCompleteActivity.EXTRA_CORRECT_GUESSES, correctGuesses);
+        intent.putExtra(RoundCompleteActivity.EXTRA_TOTAL_SONGS, TOTAL_SONGS);
+        intent.putExtra(RoundCompleteActivity.EXTRA_TOTAL_TIME, timeString);
+        intent.putExtra(RoundCompleteActivity.EXTRA_X2_USED, x2UsedCount);
+        intent.putExtra(RoundCompleteActivity.EXTRA_CHALLENGE_NAME, challengeType);
+        intent.putExtra(RoundCompleteActivity.EXTRA_API_URL, apiUrl);
+
+        startActivity(intent);
+        finish();
     }
 }
