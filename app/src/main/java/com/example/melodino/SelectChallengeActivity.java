@@ -48,6 +48,7 @@ public class SelectChallengeActivity extends AppCompatActivity {
     private LinearLayout recentlyPlayedList;
     private LinearLayout popularPlaylistsContainer;
     private LinearLayout trendingArtistsContainer;
+    private LinearLayout genreSectionsContainer;
 
     private DeezerApiService apiService;
     private Handler searchHandler = new Handler(Looper.getMainLooper());
@@ -76,6 +77,7 @@ public class SelectChallengeActivity extends AppCompatActivity {
         recentlyPlayedList = findViewById(R.id.recently_played_list);
         popularPlaylistsContainer = findViewById(R.id.popular_playlists_container);
         trendingArtistsContainer = findViewById(R.id.trending_artists_container);
+        genreSectionsContainer = findViewById(R.id.genre_sections_container);
 
         recentlyPlayedManager = new RecentlyPlayedManager(this);
 
@@ -86,6 +88,7 @@ public class SelectChallengeActivity extends AppCompatActivity {
         populateRecentlyPlayed();
         populatePopularPlaylists();
         populateTrendingArtists();
+        populateGenreSections();
 
         // Back button
         backButton.setOnClickListener(v -> {
@@ -196,7 +199,8 @@ public class SelectChallengeActivity extends AppCompatActivity {
                     popularPlaylistsContainer.removeAllViews();
                     for (Playlist playlist : response.body().getData()) {
                         addPopularPlaylistItem(playlist.getTitle(), playlist.getPictureMedium(),
-                                "https://api.deezer.com/playlist/" + playlist.getId() + "/tracks");
+                                "https://api.deezer.com/playlist/" + playlist.getId() + "/tracks",
+                                popularPlaylistsContainer);
                     }
                 }
             }
@@ -208,8 +212,8 @@ public class SelectChallengeActivity extends AppCompatActivity {
         });
     }
 
-    private void addPopularPlaylistItem(String title, String imageUrl, String apiUrl) {
-        View view = LayoutInflater.from(this).inflate(R.layout.item_popular_playlist_card, popularPlaylistsContainer,
+    private void addPopularPlaylistItem(String title, String imageUrl, String apiUrl, LinearLayout container) {
+        View view = LayoutInflater.from(this).inflate(R.layout.item_popular_playlist_card, container,
                 false);
         TextView titleView = view.findViewById(R.id.card_title);
         ImageView imageView = view.findViewById(R.id.card_image);
@@ -218,7 +222,7 @@ public class SelectChallengeActivity extends AppCompatActivity {
         Glide.with(this).load(imageUrl).into(imageView);
 
         view.setOnClickListener(v -> startChallenge(title, apiUrl, "Playlist", imageUrl));
-        popularPlaylistsContainer.addView(view);
+        container.addView(view);
     }
 
     private void populateTrendingArtists() {
@@ -252,6 +256,40 @@ public class SelectChallengeActivity extends AppCompatActivity {
 
         view.setOnClickListener(v -> startChallenge(name, apiUrl, "Artist", imageUrl));
         trendingArtistsContainer.addView(view);
+    }
+
+    private void populateGenreSections() {
+        String[] genres = { "Pop", "Rock", "Rap", "R&B", "Latin", "Electronic" };
+        for (String genre : genres) {
+            addGenreSection(genre);
+        }
+    }
+
+    private void addGenreSection(String genreName) {
+        View sectionView = LayoutInflater.from(this).inflate(R.layout.item_genre_section, genreSectionsContainer,
+                false);
+        TextView titleView = sectionView.findViewById(R.id.section_title);
+        LinearLayout contentContainer = sectionView.findViewById(R.id.section_content);
+
+        titleView.setText(genreName + " Playlists");
+        genreSectionsContainer.addView(sectionView);
+
+        apiService.searchPlaylists(genreName).enqueue(new Callback<DeezerResponse<Playlist>>() {
+            @Override
+            public void onResponse(Call<DeezerResponse<Playlist>> call, Response<DeezerResponse<Playlist>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    for (Playlist playlist : response.body().getData()) {
+                        addPopularPlaylistItem(playlist.getTitle(), playlist.getPictureMedium(),
+                                "https://api.deezer.com/playlist/" + playlist.getId() + "/tracks", contentContainer);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DeezerResponse<Playlist>> call, Throwable t) {
+                // Ignore
+            }
+        });
     }
 
     private java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
