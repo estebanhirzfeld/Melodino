@@ -40,6 +40,12 @@
         <activity
             android:name=".LoadingActivity"
             android:exported="true" />
+        <activity
+            android:name=".ui.RoundCompleteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChooseModeActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

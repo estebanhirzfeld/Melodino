@@ -260,12 +260,12 @@ public class SelectChallengeActivity extends AppCompatActivity {
 
     private void populateGenreSections() {
         String[] genres = {
-                "Current Hits",  // The Billboard Hot 100 style
-                "2000s",         // The sweet spot for 25-35 year olds
-                "90s",           // Golden era nostalgia
-                "80s",           // Synth-pop and classic rock
-                "Movie Themes",   // Very distinct audio clips, fun to guess
-                "Latin Party",   // Specifically high-energy songs
+                "Current Hits", // The Billboard Hot 100 style
+                "2000s", // The sweet spot for 25-35 year olds
+                "90s", // Golden era nostalgia
+                "80s", // Synth-pop and classic rock
+                "Movie Themes", // Very distinct audio clips, fun to guess
+                "Latin Party", // Specifically high-energy songs
         };
         for (String genre : genres) {
             addGenreSection(genre);
@@ -467,10 +467,14 @@ public class SelectChallengeActivity extends AppCompatActivity {
         recentlyPlayedManager.addRecentlyPlayed(
                 new RecentlyPlayedManager.RecentlyPlayedItem(challengeName, subtitle, apiUrl, imageUrl));
 
-        Intent intent = new Intent(SelectChallengeActivity.this, LoadingActivity.class);
+        Intent intent = new Intent(SelectChallengeActivity.this, ChooseModeActivity.class);
         intent.putExtra("challenge_type", challengeName);
+        intent.putExtra("challenge_subtitle", subtitle);
         if (apiUrl != null) {
             intent.putExtra("api_url", apiUrl);
+        }
+        if (imageUrl != null) {
+            intent.putExtra("image_url", imageUrl);
         }
         startActivity(intent);
     }

@@ -59,33 +59,79 @@ public class LoadingActivity extends AppCompatActivity {
                     if (response.isSuccessful() && response.body() != null) {
                         List<Track> tracks = response.body().getData();
                         if (tracks != null && !tracks.isEmpty()) {
-                            // Pick random song
-                            Random random = new Random();
-                            Track randomTrack = tracks.get(random.nextInt(tracks.size()));
-
-                            // Collect all songs for autocomplete
-                            java.util.ArrayList<String> allSongs = new java.util.ArrayList<>();
+                            // Filter tracks with preview URL
+                            List<Track> validTracks = new java.util.ArrayList<>();
                             for (Track track : tracks) {
-                                allSongs.add(track.getTitle() + " - " + track.getArtist().getName());
+                                if (track.getPreview() != null && !track.getPreview().isEmpty()) {
+                                    validTracks.add(track);
+                                }
                             }
 
-                            // Navigate to MainActivity
-                            Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
+                            if (validTracks.size() < 5) {
+                                Toast.makeText(LoadingActivity.this, "Not enough playable songs in this playlist",
+                                        Toast.LENGTH_SHORT).show();
+                                finish();
+                                return;
+                            }
 
-                            // LOGGING
-                            android.util.Log.d("Melodino", "Selected Track: " + randomTrack.getTitle());
-                            android.util.Log.d("Melodino", "Artist: " + randomTrack.getArtist().getName());
-                            android.util.Log.d("Melodino", "Preview URL: " + randomTrack.getPreview());
-                            android.util.Log.d("Melodino", "Cover URL: " + randomTrack.getAlbum().getCoverMedium());
+                            String gameMode = getIntent().getStringExtra("GAME_MODE");
+                            if (gameMode == null)
+                                gameMode = "SURVIVAL"; // Default
 
-                            intent.putExtra("song_url", randomTrack.getPreview());
-                            intent.putExtra("correct_answer",
-                                    randomTrack.getTitle() + " - " + randomTrack.getArtist().getName());
-                            intent.putExtra("cover_url", randomTrack.getAlbum().getCoverMedium());
-                            intent.putExtra("api_url", url); // Pass API URL for "Play Again"
-                            intent.putStringArrayListExtra("song_list", allSongs); // Pass full list
-                            startActivity(intent);
-                            finish();
+                            if (gameMode.equals("CLASSIC")) {
+                                // Classic Mode: Pick 1 random song
+                                java.util.Collections.shuffle(validTracks);
+                                Track selectedTrack = validTracks.get(0);
+
+                                // Collect all songs for autocomplete
+                                java.util.ArrayList<String> allSongs = new java.util.ArrayList<>();
+                                for (Track track : tracks) {
+                                    allSongs.add(track.getTitle() + " - " + track.getArtist().getName());
+                                }
+
+                                Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
+                                intent.putExtra("song_url", selectedTrack.getPreview());
+                                intent.putExtra("correct_answer",
+                                        selectedTrack.getTitle() + " - " + selectedTrack.getArtist().getName());
+                                intent.putExtra("cover_url", selectedTrack.getAlbum().getCoverMedium());
+                                intent.putStringArrayListExtra("song_list", allSongs);
+                                intent.putExtra("api_url", url);
+                                startActivity(intent);
+                                finish();
+
+                            } else {
+                                // Survival Mode: Pick 5 songs
+                                java.util.Collections.shuffle(validTracks);
+                                List<Track> selectedTracks = validTracks.subList(0, 5);
+
+                                java.util.ArrayList<String> songUrls = new java.util.ArrayList<>();
+                                java.util.ArrayList<String> correctAnswers = new java.util.ArrayList<>();
+                                java.util.ArrayList<String> coverUrls = new java.util.ArrayList<>();
+                                java.util.ArrayList<String> allSongs = new java.util.ArrayList<>();
+
+                                for (Track track : selectedTracks) {
+                                    songUrls.add(track.getPreview());
+                                    correctAnswers.add(track.getTitle() + " - " + track.getArtist().getName());
+                                    coverUrls.add(track.getAlbum().getCoverMedium());
+                                }
+
+                                for (Track track : tracks) {
+                                    allSongs.add(track.getTitle() + " - " + track.getArtist().getName());
+                                }
+
+                                Intent intent = new Intent(LoadingActivity.this, GameActivity.class);
+                                intent.putStringArrayListExtra("song_urls", songUrls);
+                                intent.putStringArrayListExtra("correct_answers", correctAnswers);
+                                intent.putStringArrayListExtra("cover_urls", coverUrls);
+                                intent.putStringArrayListExtra("all_songs", allSongs);
+                                intent.putExtra("api_url", url);
+                                intent.putExtra("challenge_type", getIntent().getStringExtra("challenge_type"));
+                                intent.putExtra("challenge_subtitle", getIntent().getStringExtra("challenge_subtitle"));
+
+                                startActivity(intent);
+                                finish();
+                            }
+
                         } else {
                             Toast.makeText(LoadingActivity.this, "No tracks found", Toast.LENGTH_SHORT).show();
                             finish();
