@@ -355,10 +355,10 @@ public class GameActivity extends AppCompatActivity {
         x2Button.setVisibility(View.VISIBLE);
 
         if (isX2Active) {
-            x2Button.setBackgroundResource(R.drawable.bg_rainbow_fill);
+            x2Button.setBackgroundResource(R.drawable.bg_organic_gradient);
             stopPulsating();
         } else {
-            x2Button.setBackgroundResource(R.drawable.bg_rainbow_border);
+            x2Button.setBackgroundResource(R.drawable.bg_organic_border);
             startPulsating();
         }
     }

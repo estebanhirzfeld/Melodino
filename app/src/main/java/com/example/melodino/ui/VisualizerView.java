@@ -67,38 +67,49 @@ public class VisualizerView extends View {
         float barWidth = width / BAR_COUNT;
 
         for (int i = 0; i < BAR_COUNT; i++) {
-            // Calculate organic height using sine waves
-            // We combine multiple sine waves to create a more complex, "organic" feel
+            float actualHeight;
 
-            // Wave 1: Main slow wave
-            float h1 = (float) Math.sin(phase + i * 0.15f);
+            if (isPlaying) {
+                // Calculate organic height using sine waves
+                // We combine multiple sine waves to create a more complex, "organic" feel
 
-            // Wave 2: Faster, smaller wave
-            float h2 = (float) Math.sin(phase * 2.2f + i * 0.4f);
+                // Wave 1: Main slow wave
+                float h1 = (float) Math.sin(phase + i * 0.15f);
 
-            // Wave 3: Very fast, tiny jitter
-            float h3 = (float) Math.sin(phase * 4.5f + i * 0.8f);
+                // Wave 2: Faster, smaller wave
+                float h2 = (float) Math.sin(phase * 2.2f + i * 0.4f);
 
-            // Combine and normalize roughly to 0..1 range
-            // h1 is main (-1 to 1), h2 is detail (-1 to 1) scaled by 0.5, h3 scaled by 0.2
-            float rawHeight = h1 + h2 * 0.5f + h3 * 0.2f;
-            // Max possible value approx 1 + 0.5 + 0.2 = 1.7. Min -1.7.
+                // Wave 3: Very fast, tiny jitter
+                float h3 = (float) Math.sin(phase * 4.5f + i * 0.8f);
 
-            // Normalize to 0..1
-            float normHeight = (rawHeight + 1.7f) / 3.4f;
+                // Combine and normalize roughly to 0..1 range
+                // h1 is main (-1 to 1), h2 is detail (-1 to 1) scaled by 0.5, h3 scaled by 0.2
+                float rawHeight = h1 + h2 * 0.5f + h3 * 0.2f;
+                // Max possible value approx 1 + 0.5 + 0.2 = 1.7. Min -1.7.
 
-            // Apply a window function (Hanning/Hamming-like) to taper edges if desired,
-            // or just let it flow. The user's image shows tapering at ends.
-            // Let's apply a simple bell curve factor based on index
-            float xNorm = (float) i / BAR_COUNT; // 0 to 1
-            float window = (float) Math.sin(xNorm * Math.PI); // 0 at ends, 1 in center
+                // Normalize to 0..1
+                float normHeight = (rawHeight + 1.7f) / 3.4f;
 
-            // Final height calculation
-            // Min height 10%, Max height 90%
-            float actualHeight = (height * 0.1f) + (height * 0.8f) * normHeight * window;
+                // Apply a window function (Hanning/Hamming-like) to taper edges if desired,
+                // or just let it flow. The user's image shows tapering at ends.
+                // Let's apply a simple bell curve factor based on index
+                float xNorm = (float) i / BAR_COUNT; // 0 to 1
+                float window = (float) Math.sin(xNorm * Math.PI); // 0 at ends, 1 in center
 
-            // Ensure minimum height for visibility
-            actualHeight = Math.max(actualHeight, height * 0.05f);
+                // Final height calculation
+                // Min height 10%, Max height 90%
+                actualHeight = (height * 0.1f) + (height * 0.8f) * normHeight * window;
+
+                // Ensure minimum height for visibility
+                actualHeight = Math.max(actualHeight, height * 0.05f);
+            } else {
+                // Flat line (or very subtle wave) when idle
+                // Let's make it a very thin, slightly undulating line to show it's "alive" but
+                // waiting
+                float idleWave = (float) Math.sin(phase * 0.5f + i * 0.1f) * (height * 0.02f);
+                actualHeight = (height * 0.02f) + idleWave;
+                actualHeight = Math.max(actualHeight, 4f); // Minimum 4px thickness
+            }
 
             // Center vertically
             float startY = (height - actualHeight) / 2;
@@ -108,17 +119,13 @@ public class VisualizerView extends View {
             canvas.drawLine(x, startY, x, endY, paint);
         }
 
-        if (isPlaying) {
-            // Increment phase for animation
-            phase += 0.08f;
-            postInvalidateOnAnimation();
-        }
+        // Always animate slightly to keep it alive
+        phase += isPlaying ? 0.08f : 0.02f;
+        postInvalidateOnAnimation();
     }
 
     public void setPlaying(boolean playing) {
         this.isPlaying = playing;
-        if (playing) {
-            postInvalidate();
-        }
+        // No need to postInvalidate here as we are always animating in onDraw
     }
 }
