@@ -259,7 +259,14 @@ public class SelectChallengeActivity extends AppCompatActivity {
     }
 
     private void populateGenreSections() {
-        String[] genres = { "Pop", "Rock", "Rap", "R&B", "Latin", "Electronic" };
+        String[] genres = {
+                "Current Hits",  // The Billboard Hot 100 style
+                "2000s",         // The sweet spot for 25-35 year olds
+                "90s",           // Golden era nostalgia
+                "80s",           // Synth-pop and classic rock
+                "Movie Themes",   // Very distinct audio clips, fun to guess
+                "Latin Party",   // Specifically high-energy songs
+        };
         for (String genre : genres) {
             addGenreSection(genre);
         }
