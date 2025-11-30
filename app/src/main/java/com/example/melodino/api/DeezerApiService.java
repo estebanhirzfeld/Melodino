@@ -20,6 +20,12 @@ public interface DeezerApiService {
     @GET("search/playlist")
     Call<DeezerResponse<Playlist>> searchPlaylists(@Query("q") String query);
 
+    @GET("chart/0/playlists")
+    Call<DeezerResponse<Playlist>> getChartPlaylists();
+
+    @GET("chart/0/artists")
+    Call<DeezerResponse<Artist>> getChartArtists();
+
     @GET
     Call<DeezerResponse<Track>> getPlaylistTracks(@Url String url);
 }

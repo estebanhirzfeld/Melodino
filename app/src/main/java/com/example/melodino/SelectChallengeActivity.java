@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +27,7 @@ import com.example.melodino.models.Artist;
 import com.example.melodino.models.DeezerResponse;
 import com.example.melodino.models.Genre;
 import com.example.melodino.models.Playlist;
+import com.example.melodino.utils.RecentlyPlayedManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,27 +40,24 @@ public class SelectChallengeActivity extends AppCompatActivity {
 
     private ImageButton backButton;
     private EditText searchInput;
-    private ScrollView challengesScrollView;
-    private ScrollView searchResultsContainer;
+    private View challengesContent;
+    private LinearLayout searchResultsContainer;
     private LinearLayout searchResultsContent;
 
-    // Challenges
-    private CardView challengeTop50;
-    private CardView challengeArtist;
-    private CardView challengePlaylist; // Renamed from challengeGenre
-    private CardView challengeRock;
-    private CardView challengePop;
-    private CardView challengeEdm;
-    private CardView challengeHiphop;
-    private CardView challenge80s;
+    // New Containers
+    private LinearLayout recentlyPlayedList;
+    private LinearLayout popularPlaylistsContainer;
+    private LinearLayout trendingArtistsContainer;
+    private LinearLayout genreSectionsContainer;
 
     private DeezerApiService apiService;
     private Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
     private List<Genre> allGenres = new ArrayList<>();
+    private RecentlyPlayedManager recentlyPlayedManager;
 
     private enum SearchMode {
-        ALL, ARTIST, PLAYLIST // Renamed GENRE to PLAYLIST
+        ALL, ARTIST, PLAYLIST
     }
 
     private SearchMode currentSearchMode = SearchMode.ALL;
@@ -73,21 +70,25 @@ public class SelectChallengeActivity extends AppCompatActivity {
         // Initialize views
         backButton = findViewById(R.id.back_button);
         searchInput = findViewById(R.id.search_input);
-        challengesScrollView = findViewById(R.id.challenges_scroll_view);
+        challengesContent = findViewById(R.id.challenges_content);
         searchResultsContainer = findViewById(R.id.search_results_container);
         searchResultsContent = findViewById(R.id.search_results_content);
 
-        challengeTop50 = findViewById(R.id.challenge_top50);
-        challengeArtist = findViewById(R.id.challenge_artist);
-        challengePlaylist = findViewById(R.id.challenge_playlist); // Updated ID
-        challengeRock = findViewById(R.id.challenge_rock);
-        challengePop = findViewById(R.id.challenge_pop);
-        challengeEdm = findViewById(R.id.challenge_edm);
-        challengeHiphop = findViewById(R.id.challenge_hiphop);
-        challenge80s = findViewById(R.id.challenge_80s);
+        recentlyPlayedList = findViewById(R.id.recently_played_list);
+        popularPlaylistsContainer = findViewById(R.id.popular_playlists_container);
+        trendingArtistsContainer = findViewById(R.id.trending_artists_container);
+        genreSectionsContainer = findViewById(R.id.genre_sections_container);
+
+        recentlyPlayedManager = new RecentlyPlayedManager(this);
 
         setupRetrofit();
         fetchAllGenres();
+
+        // Populate UI Sections
+        populateRecentlyPlayed();
+        populatePopularPlaylists();
+        populateTrendingArtists();
+        populateGenreSections();
 
         // Back button
         backButton.setOnClickListener(v -> {
@@ -121,7 +122,6 @@ public class SelectChallengeActivity extends AppCompatActivity {
                     if (currentSearchMode == SearchMode.ALL) {
                         showChallenges();
                     } else {
-                        // In specific mode, empty query shows empty results but stays in search view
                         searchResultsContent.removeAllViews();
                     }
                 } else {
@@ -130,8 +130,13 @@ public class SelectChallengeActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
-        setupChallengeClickListeners();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh recently played when returning to this screen
+        populateRecentlyPlayed();
     }
 
     private void setupRetrofit() {
@@ -154,6 +159,139 @@ public class SelectChallengeActivity extends AppCompatActivity {
         });
     }
 
+    private void populateRecentlyPlayed() {
+        recentlyPlayedList.removeAllViews();
+        List<RecentlyPlayedManager.RecentlyPlayedItem> items = recentlyPlayedManager.getRecentlyPlayed();
+
+        if (items.isEmpty()) {
+            // Hide section if empty, or show a placeholder?
+            // For now, let's hide the section header if we could, but since it's in XML,
+            // we might just leave it empty or show a "No recent plays" text.
+            // Ideally we'd toggle visibility of the TextView header too, but I don't have a
+            // reference to it.
+            // Let's just leave it empty for now.
+        } else {
+            for (RecentlyPlayedManager.RecentlyPlayedItem item : items) {
+                addRecentlyPlayedItem(item.getTitle(), item.getSubtitle(), item.getApiUrl(), item.getImageUrl());
+            }
+        }
+    }
+
+    private void addRecentlyPlayedItem(String title, String subtitle, String apiUrl, String imageUrl) {
+        View view = LayoutInflater.from(this).inflate(R.layout.item_recently_played, recentlyPlayedList, false);
+        TextView titleView = view.findViewById(R.id.item_title);
+        TextView subtitleView = view.findViewById(R.id.item_subtitle);
+        ImageView imageView = view.findViewById(R.id.item_image);
+
+        titleView.setText(title);
+        subtitleView.setText(subtitle);
+        Glide.with(this).load(imageUrl).into(imageView);
+
+        view.setOnClickListener(v -> startChallenge(title, apiUrl, subtitle, imageUrl));
+        recentlyPlayedList.addView(view);
+    }
+
+    private void populatePopularPlaylists() {
+        apiService.getChartPlaylists().enqueue(new Callback<DeezerResponse<Playlist>>() {
+            @Override
+            public void onResponse(Call<DeezerResponse<Playlist>> call, Response<DeezerResponse<Playlist>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    popularPlaylistsContainer.removeAllViews();
+                    for (Playlist playlist : response.body().getData()) {
+                        addPopularPlaylistItem(playlist.getTitle(), playlist.getPictureMedium(),
+                                "https://api.deezer.com/playlist/" + playlist.getId() + "/tracks",
+                                popularPlaylistsContainer);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DeezerResponse<Playlist>> call, Throwable t) {
+                // Fallback or error handling
+            }
+        });
+    }
+
+    private void addPopularPlaylistItem(String title, String imageUrl, String apiUrl, LinearLayout container) {
+        View view = LayoutInflater.from(this).inflate(R.layout.item_popular_playlist_card, container,
+                false);
+        TextView titleView = view.findViewById(R.id.card_title);
+        ImageView imageView = view.findViewById(R.id.card_image);
+
+        titleView.setText(title);
+        Glide.with(this).load(imageUrl).into(imageView);
+
+        view.setOnClickListener(v -> startChallenge(title, apiUrl, "Playlist", imageUrl));
+        container.addView(view);
+    }
+
+    private void populateTrendingArtists() {
+        apiService.getChartArtists().enqueue(new Callback<DeezerResponse<Artist>>() {
+            @Override
+            public void onResponse(Call<DeezerResponse<Artist>> call, Response<DeezerResponse<Artist>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    trendingArtistsContainer.removeAllViews();
+                    for (Artist artist : response.body().getData()) {
+                        addTrendingArtistItem(artist.getName(), artist.getPictureMedium(),
+                                "https://api.deezer.com/artist/" + artist.getId() + "/top?limit=50");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DeezerResponse<Artist>> call, Throwable t) {
+                // Fallback
+            }
+        });
+    }
+
+    private void addTrendingArtistItem(String name, String imageUrl, String apiUrl) {
+        View view = LayoutInflater.from(this).inflate(R.layout.item_trending_artist_circle, trendingArtistsContainer,
+                false);
+        TextView nameView = view.findViewById(R.id.artist_name);
+        ImageView imageView = view.findViewById(R.id.artist_image);
+
+        nameView.setText(name);
+        Glide.with(this).load(imageUrl).into(imageView);
+
+        view.setOnClickListener(v -> startChallenge(name, apiUrl, "Artist", imageUrl));
+        trendingArtistsContainer.addView(view);
+    }
+
+    private void populateGenreSections() {
+        String[] genres = { "Pop", "Rock", "Rap", "R&B", "Latin", "Electronic" };
+        for (String genre : genres) {
+            addGenreSection(genre);
+        }
+    }
+
+    private void addGenreSection(String genreName) {
+        View sectionView = LayoutInflater.from(this).inflate(R.layout.item_genre_section, genreSectionsContainer,
+                false);
+        TextView titleView = sectionView.findViewById(R.id.section_title);
+        LinearLayout contentContainer = sectionView.findViewById(R.id.section_content);
+
+        titleView.setText(genreName + " Playlists");
+        genreSectionsContainer.addView(sectionView);
+
+        apiService.searchPlaylists(genreName).enqueue(new Callback<DeezerResponse<Playlist>>() {
+            @Override
+            public void onResponse(Call<DeezerResponse<Playlist>> call, Response<DeezerResponse<Playlist>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    for (Playlist playlist : response.body().getData()) {
+                        addPopularPlaylistItem(playlist.getTitle(), playlist.getPictureMedium(),
+                                "https://api.deezer.com/playlist/" + playlist.getId() + "/tracks", contentContainer);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DeezerResponse<Playlist>> call, Throwable t) {
+                // Ignore
+            }
+        });
+    }
+
     private java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
 
     private void performSearch(String query) {
@@ -166,10 +304,8 @@ public class SelectChallengeActivity extends AppCompatActivity {
                 List<Genre> filteredGenres = new ArrayList<>();
                 List<Playlist> playlists = null;
 
-                // Determine limit based on mode
                 int limit = (currentSearchMode == SearchMode.ALL) ? 3 : 10;
 
-                // 1. Search Artists (if mode is ALL or ARTIST)
                 if (currentSearchMode == SearchMode.ALL || currentSearchMode == SearchMode.ARTIST) {
                     Response<DeezerResponse<Artist>> artistResponse = apiService.searchArtists(query).execute();
                     if (artistResponse.isSuccessful() && artistResponse.body() != null) {
@@ -177,8 +313,6 @@ public class SelectChallengeActivity extends AppCompatActivity {
                     }
                 }
 
-                // 2. Filter Genres (only if mode is ALL) - Removed GENRE specific search as
-                // requested
                 if (currentSearchMode == SearchMode.ALL) {
                     for (Genre genre : allGenres) {
                         if (genre.getName() != null && genre.getName().toLowerCase().contains(query.toLowerCase())) {
@@ -187,7 +321,6 @@ public class SelectChallengeActivity extends AppCompatActivity {
                     }
                 }
 
-                // 3. Search Playlists (if mode is ALL or PLAYLIST)
                 if (currentSearchMode == SearchMode.ALL || currentSearchMode == SearchMode.PLAYLIST) {
                     Response<DeezerResponse<Playlist>> playlistResponse = apiService.searchPlaylists(query).execute();
                     if (playlistResponse.isSuccessful() && playlistResponse.body() != null) {
@@ -195,7 +328,6 @@ public class SelectChallengeActivity extends AppCompatActivity {
                     }
                 }
 
-                // 4. Update UI on Main Thread
                 List<Artist> finalArtists = artists;
                 List<Playlist> finalPlaylists = playlists;
                 int finalLimit = limit;
@@ -204,7 +336,6 @@ public class SelectChallengeActivity extends AppCompatActivity {
                     if (isDestroyed() || isFinishing())
                         return;
 
-                    // Add Artists
                     if (finalArtists != null && !finalArtists.isEmpty()) {
                         addHeader("Artists");
                         for (int i = 0; i < Math.min(finalArtists.size(), finalLimit); i++) {
@@ -212,16 +343,13 @@ public class SelectChallengeActivity extends AppCompatActivity {
                         }
                     }
 
-                    // Add Genres (Only in ALL mode)
                     if (!filteredGenres.isEmpty()) {
                         addHeader("Genres");
-                        for (int i = 0; i < Math.min(filteredGenres.size(), 3); i++) { // Keep genre limit small in ALL
-                                                                                       // mode
+                        for (int i = 0; i < Math.min(filteredGenres.size(), 3); i++) {
                             addGenreItem(filteredGenres.get(i));
                         }
                     }
 
-                    // Add Playlists
                     if (finalPlaylists != null && !finalPlaylists.isEmpty()) {
                         addHeader("Playlists");
                         for (int i = 0; i < Math.min(finalPlaylists.size(), finalLimit); i++) {
@@ -237,19 +365,19 @@ public class SelectChallengeActivity extends AppCompatActivity {
     }
 
     private void showChallenges() {
-        challengesScrollView.setVisibility(View.VISIBLE);
+        challengesContent.setVisibility(View.VISIBLE);
         searchResultsContainer.setVisibility(View.GONE);
     }
 
     private void showSearchResults() {
-        challengesScrollView.setVisibility(View.GONE);
+        challengesContent.setVisibility(View.GONE);
         searchResultsContainer.setVisibility(View.VISIBLE);
     }
 
     private void enableSearchMode(SearchMode mode) {
         currentSearchMode = mode;
         showSearchResults();
-        searchResultsContent.removeAllViews(); // Clear previous results
+        searchResultsContent.removeAllViews();
 
         if (mode == SearchMode.ARTIST) {
             searchInput.setHint("Search for an artist...");
@@ -290,7 +418,8 @@ public class SelectChallengeActivity extends AppCompatActivity {
         Glide.with(this).load(artist.getPictureMedium()).into(image);
 
         view.setOnClickListener(v -> startChallenge(artist.getName(),
-                "https://api.deezer.com/artist/" + artist.getId() + "/top?limit=50"));
+                "https://api.deezer.com/artist/" + artist.getId() + "/top?limit=50", "Artist",
+                artist.getPictureMedium()));
         searchResultsContent.addView(view);
     }
 
@@ -304,8 +433,6 @@ public class SelectChallengeActivity extends AppCompatActivity {
             Glide.with(this).load(genre.getPictureMedium()).into(icon);
         }
 
-        // Genre items are not clickable to start a challenge directly from search
-        // results in this mode
         searchResultsContent.addView(view);
     }
 
@@ -319,42 +446,31 @@ public class SelectChallengeActivity extends AppCompatActivity {
         details.setText("Playlist • " + playlist.getNbTracks() + " songs");
         Glide.with(this)
                 .load(playlist.getPictureMedium())
-                .apply(RequestOptions.bitmapTransform(new RoundedCorners(16))) // 8dp approx
+                .apply(RequestOptions.bitmapTransform(new RoundedCorners(16)))
                 .into(image);
 
         view.setOnClickListener(v -> startChallenge(playlist.getTitle(),
-                "https://api.deezer.com/playlist/" + playlist.getId() + "/tracks"));
+                "https://api.deezer.com/playlist/" + playlist.getId() + "/tracks", "Playlist",
+                playlist.getPictureMedium()));
         searchResultsContent.addView(view);
     }
 
-    private void setupChallengeClickListeners() {
-        challengeTop50.setOnClickListener(v -> startChallenge("Top 50", TOP_50_URL));
+    private void startChallenge(String challengeName, String apiUrl, String subtitle, String imageUrl) {
+        // Save to recently played
+        recentlyPlayedManager.addRecentlyPlayed(
+                new RecentlyPlayedManager.RecentlyPlayedItem(challengeName, subtitle, apiUrl, imageUrl));
 
-        // Modified listeners for Artist and Playlist
-        challengeArtist.setOnClickListener(v -> enableSearchMode(SearchMode.ARTIST));
-        challengePlaylist.setOnClickListener(v -> enableSearchMode(SearchMode.PLAYLIST)); // Updated listener
-
-        challengeRock
-                .setOnClickListener(v -> startChallenge("Rock", "https://api.deezer.com/playlist/938813531/tracks"));
-        challengePop
-                .setOnClickListener(v -> startChallenge("Pop", "https://api.deezer.com/playlist/1290316405/tracks"));
-        challengeEdm
-                .setOnClickListener(v -> startChallenge("EDM", "https://api.deezer.com/playlist/1996494362/tracks"));
-        challengeHiphop.setOnClickListener(
-                v -> startChallenge("Hip-Hop", "https://api.deezer.com/playlist/1386279365/tracks"));
-        challenge80s
-                .setOnClickListener(v -> startChallenge("'80s", "https://api.deezer.com/playlist/1431604065/tracks"));
-    }
-
-    private static final String TOP_50_URL = "https://api.deezer.com/playlist/1111142221/tracks";
-
-    private void startChallenge(String challengeName, String apiUrl) {
         Intent intent = new Intent(SelectChallengeActivity.this, LoadingActivity.class);
         intent.putExtra("challenge_type", challengeName);
         if (apiUrl != null) {
             intent.putExtra("api_url", apiUrl);
         }
         startActivity(intent);
+    }
+
+    // Overload for backward compatibility if needed, though I updated all calls
+    private void startChallenge(String challengeName, String apiUrl) {
+        startChallenge(challengeName, apiUrl, "Unknown", "");
     }
 
     @Override

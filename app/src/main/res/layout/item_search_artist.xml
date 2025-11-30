@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_mic"
-            android:background="@color/colorSurfaceDark" />
+            android:background="@color/colorBackgroundLight" />
     </androidx.cardview.widget.CardView>
 
     <LinearLayout
