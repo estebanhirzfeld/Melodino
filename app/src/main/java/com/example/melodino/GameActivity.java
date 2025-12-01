@@ -412,7 +412,11 @@ public class GameActivity extends AppCompatActivity {
         updateX2ButtonState(); // Check if button should hide
 
         if (lives <= 0) {
-            gameOver();
+            if (isRoundMode) {
+                roundComplete();
+            } else {
+                gameOver();
+            }
         } else {
             isX2Active = false;
             updateX2ButtonState();
