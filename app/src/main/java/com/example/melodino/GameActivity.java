@@ -216,6 +216,12 @@ public class GameActivity extends AppCompatActivity {
                 visualizerView.setPlaying(false);
                 playButton.setImageResource(R.drawable.ic_play_arrow);
                 stopTimer();
+
+                // If the song stopped naturally or via timer and we are very close to the end,
+                // treat it as a timeout to reset the state for the next press.
+                if (timeRemainingMs < 500) {
+                    handleTimeOut();
+                }
             }
 
             @Override
@@ -270,14 +276,14 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void handleTimeOut() {
+        // Reset time immediately so if stopPlayback triggers onPlaybackStopped,
+        // it sees the full duration and doesn't loop back here.
+        timeRemainingMs = SONG_DURATION_MS;
+
         audioPlayer.stopPlayback();
         visualizerView.setPlaying(false);
         playButton.setImageResource(R.drawable.ic_play_arrow);
         isPlaying = false;
-        Toast.makeText(this, "Time's up! Keep guessing.", Toast.LENGTH_SHORT).show();
-
-        // Reset time so user can play again
-        timeRemainingMs = SONG_DURATION_MS;
     }
 
     private void submitGuess() {

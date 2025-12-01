@@ -65,6 +65,18 @@ public class AudioPlayer {
                 }
             });
 
+            mediaPlayer.setOnCompletionListener(mp -> {
+                // When playback completes naturally (e.g. song ends before timeout)
+                // Reset to start so user can play again
+                mp.seekTo(0);
+
+                // Notify listener that playback stopped
+                if (listener != null) {
+                    listener.onPlaybackStopped();
+                    listener.onPlaybackStateChanged(false);
+                }
+            });
+
             mediaPlayer.prepareAsync(); // Asynchronous prepare to avoid blocking UI thread
         } catch (Exception e) {
             android.util.Log.e("Melodino", "AudioPlayer Exception: " + e.getMessage());
