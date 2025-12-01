@@ -15,21 +15,27 @@
         android:theme="@style/Theme.Melodino">
         <activity
             android:name=".SelectChallengeActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".GameOverActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".WinActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".GameActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".WelcomeActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,12 +45,15 @@
         </activity>
         <activity
             android:name=".LoadingActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".ui.RoundCompleteActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".ChooseModeActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
     </application>
 
