@@ -70,6 +70,7 @@ public class GameActivity extends AppCompatActivity {
     private int lives = MAX_LIVES;
     private int score = 0;
     private boolean isX2Active = false;
+    private boolean hasGuessedWrong = false;
 
     private AudioPlayer audioPlayer;
     private CountDownTimer songTimer;
@@ -178,6 +179,7 @@ public class GameActivity extends AppCompatActivity {
 
         // Reset x2
         isX2Active = false;
+        hasGuessedWrong = false;
         updateX2ButtonState();
         updateHearts();
 
@@ -325,6 +327,7 @@ public class GameActivity extends AppCompatActivity {
         guessInput.setHint("Wrong! Try again.");
         guessInput.setHintTextColor(Color.RED);
         loseLife();
+        hasGuessedWrong = true;
 
         if (wasX2 && lives > 0) {
             Toast.makeText(this, "Risk failed! Skipping song.", Toast.LENGTH_SHORT).show();
@@ -337,7 +340,9 @@ public class GameActivity extends AppCompatActivity {
     private void skipSong() {
         audioPlayer.stopPlayback();
         stopTimer();
-        loseLife(); // Skipping costs a life
+        if (!hasGuessedWrong) {
+            loseLife(); // Skipping costs a life only if haven't guessed wrong yet
+        }
         if (lives > 0) {
             nextLevel();
         }
@@ -407,14 +412,7 @@ public class GameActivity extends AppCompatActivity {
         updateX2ButtonState(); // Check if button should hide
 
         if (lives <= 0) {
-            if (isRoundMode) {
-                // In Round Mode, we don't game over, just continue or reset lives?
-                // Assuming infinite lives or just ignore death.
-                lives = 1; // Keep alive
-                updateHearts();
-            } else {
-                gameOver();
-            }
+            gameOver();
         } else {
             isX2Active = false;
             updateX2ButtonState();
