@@ -28,4 +28,7 @@
 
 
     <color name="colorHardcoreRed">#f87171</color>
+    <color name="colorDanger">#F43F5E</color>
+    <color name="colorDanger20">#33F43F5E</color>
+    <color name="colorDanger30">#4DF43F5E</color>
 </resources>

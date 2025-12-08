@@ -20,7 +20,8 @@ public class ChooseModeActivity extends AppCompatActivity {
     private ConstraintLayout cardInfinite;
     private ConstraintLayout cardSurvival;
     private ConstraintLayout cardTimeChallenge;
-    private ImageButton footerButton;
+    private ConstraintLayout cardHardcore;
+    private ImageButton backButton;
 
     private String challengeType;
     private String challengeSubtitle;
@@ -54,7 +55,8 @@ public class ChooseModeActivity extends AppCompatActivity {
         cardInfinite = findViewById(R.id.card_infinite);
         cardSurvival = findViewById(R.id.card_survival);
         cardTimeChallenge = findViewById(R.id.card_time_challenge);
-        footerButton = findViewById(R.id.footer_button);
+        cardHardcore = findViewById(R.id.card_hardcore);
+        backButton = findViewById(R.id.back_button);
     }
 
     private void setupListeners() {
@@ -65,8 +67,9 @@ public class ChooseModeActivity extends AppCompatActivity {
         cardInfinite.setOnClickListener(v -> startLoadingActivity("INFINITE"));
         cardSurvival.setOnClickListener(v -> startLoadingActivity("SURVIVAL"));
         cardTimeChallenge.setOnClickListener(v -> startLoadingActivity("TIME_CHALLENGE"));
+        cardHardcore.setOnClickListener(v -> startLoadingActivity("HARDCORE"));
 
-        footerButton.setOnClickListener(v -> finish());
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void selectCasualTab() {
