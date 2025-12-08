@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#40000000"> <!-- Ripple color -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#E6FFFFFF"/> <!-- White with 90% opacity -->
+            <stroke
+                android:width="1dp"
+                android:color="#E2E8F0"/> <!-- Slate-200 equivalent -->
+        </shape>
+    </item>
+</ripple>

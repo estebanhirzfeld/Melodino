@@ -148,7 +148,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Classic Quiz"
+                            android:text="Classic"
                             android:textColor="@color/white"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -156,7 +156,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Guess the song from four options."
+                            android:text="5 songs, 3 lives. Play at your own pace."
                             android:textColor="#B3FFFFFF"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -208,7 +208,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="A never-ending stream of songs."
+                            android:text="Endless songs, 3 lives. Play without limits."
                             android:textColor="#B3FFFFFF"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -272,7 +272,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="5 lives, 5 songs. How long can you last?"
+                            android:text="5 songs, 3 lives. Earn time with fast guesses."
                             android:textColor="#B3FFFFFF"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -317,7 +317,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Time Increment"
+                            android:text="Infinite"
                             android:textColor="@color/white"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -325,7 +325,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Race against time, gain seconds back."
+                            android:text="Endless songs, 3 lives. Keep the timer alive."
                             android:textColor="#B3FFFFFF"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -381,7 +381,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="One life. No mistakes."
+                            android:text="1 life, endless songs. Don't miss a beat."
                             android:textColor="#B3FFFFFF"
                             android:textSize="14sp" />
                     </LinearLayout>
