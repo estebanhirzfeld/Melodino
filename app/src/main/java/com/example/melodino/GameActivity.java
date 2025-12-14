@@ -37,8 +37,10 @@ import com.example.melodino.ui.RoundCompleteActivity;
 public class GameActivity extends AppCompatActivity {
 
     private static final int TOTAL_SONGS = 5;
-    private static final int MAX_LIVES = 3;
+    private static final int MAX_LIVES_DEFAULT = 3;
+    private static final int MAX_LIVES_HARDCORE = 1;
     private static final long SONG_DURATION_MS = 30000; // 30 seconds
+    private static final int[] TIME_INCREMENTS = { 2000, 8000, 16000, 30000 }; // 2s, 8s, 16s, 30s
 
     // UI Elements
     private ImageView[] hearts;
@@ -48,6 +50,8 @@ public class GameActivity extends AppCompatActivity {
     private Button skipButton;
     private ImageButton playButton;
     private Button x2Button;
+    private View timeIncrementButton; // Changed to View to match LinearLayout
+    private TextView timeIncrementLabel;
     private EditText guessInput;
     private Button submitButton;
     private RecyclerView suggestionsRecyclerView;
@@ -59,7 +63,11 @@ public class GameActivity extends AppCompatActivity {
     private ArrayList<String> allSongsList;
     private String apiUrl;
     private String challengeType;
-    private boolean isRoundMode = true;
+    private String gameMode;
+    private boolean isInfinite = false;
+    private boolean isHardcore = false;
+    private boolean isTimeIncrementMode = false;
+    private int currentDurationIndex = 0; // 0 to 3
 
     // Stats
     private int correctGuesses = 0;
@@ -67,7 +75,7 @@ public class GameActivity extends AppCompatActivity {
     private long startTimeMs;
 
     private int currentSongIndex = 0;
-    private int lives = MAX_LIVES;
+    private int lives;
     private int score = 0;
     private boolean isX2Active = false;
     private boolean hasGuessedWrong = false;
@@ -98,6 +106,8 @@ public class GameActivity extends AppCompatActivity {
         skipButton = findViewById(R.id.btn_skip);
         playButton = findViewById(R.id.btn_play);
         x2Button = findViewById(R.id.btn_x2);
+        timeIncrementButton = findViewById(R.id.btn_time_increment);
+        timeIncrementLabel = findViewById(R.id.tv_increment_label);
         guessInput = findViewById(R.id.guess_input);
         submitButton = findViewById(R.id.btn_submit);
         suggestionsRecyclerView = findViewById(R.id.suggestions_recycler_view);
@@ -121,7 +131,54 @@ public class GameActivity extends AppCompatActivity {
         allSongsList = intent.getStringArrayListExtra("all_songs");
         apiUrl = intent.getStringExtra("api_url");
         challengeType = intent.getStringExtra("challenge_type");
-        // isRoundMode defaults to true for GameActivity
+        gameMode = intent.getStringExtra("GAME_MODE");
+        if (gameMode == null)
+            gameMode = "CLASSIC";
+
+        // Configure Mode Flags
+        switch (gameMode) {
+            case "INFINITE":
+                isInfinite = true;
+                challengeType = "Infinite";
+                break;
+            case "SURVIVAL":
+                isTimeIncrementMode = true;
+                challengeType = "Survival";
+                break;
+            case "TIME_CHALLENGE": // Legacy support or specific mode
+                isTimeIncrementMode = true;
+                isInfinite = true;
+                challengeType = "Infinite"; // Rename for display
+                break;
+            case "HARDCORE":
+                isInfinite = true;
+                isHardcore = true;
+                isTimeIncrementMode = true;
+                challengeType = "Hardcore"; // Rename for display
+                break;
+            case "CLASSIC":
+                challengeType = "Classic"; // Rename for display
+                break;
+            default:
+                // Standard survival behavior
+                break;
+        }
+
+        // Set Spotlight Color
+        View spotlight = findViewById(R.id.spotlight);
+        if (isHardcore) {
+            // Red for Hardcore
+            spotlight.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#ef4444")));
+        } else if (isTimeIncrementMode) {
+            // Violet for Competitive (Survival / Infinite)
+            spotlight.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#8b5cf6")));
+        } else {
+            // Green for Casual (Classic / Infinite) - Default
+            spotlight.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#10b981")));
+        }
+
+        lives = isHardcore ? MAX_LIVES_HARDCORE : MAX_LIVES_DEFAULT;
+
         String challengeSubtitle = intent.getStringExtra("challenge_subtitle");
 
         startTimeMs = System.currentTimeMillis();
@@ -139,6 +196,7 @@ public class GameActivity extends AppCompatActivity {
         playButton.setOnClickListener(v -> togglePlayback());
         skipButton.setOnClickListener(v -> skipSong());
         x2Button.setOnClickListener(v -> toggleX2());
+        timeIncrementButton.setOnClickListener(v -> incrementTime());
         submitButton.setOnClickListener(v -> submitGuess());
 
         // Setup Input
@@ -171,11 +229,21 @@ public class GameActivity extends AppCompatActivity {
 
     private void startLevel(int index) {
         currentSongIndex = index;
-        songCounterText.setText("Song " + (index + 1) + "/" + TOTAL_SONGS);
+        songCounterText.setText("Song " + (index + 1) + "/" + songUrls.size());
         guessInput.setText("");
         guessInput.setHint("Type your guess here...");
         guessInput.setHintTextColor(Color.parseColor("#94a3b8"));
-        timeRemainingMs = SONG_DURATION_MS;
+
+        if (isTimeIncrementMode) {
+            currentDurationIndex = 0;
+            timeRemainingMs = TIME_INCREMENTS[0];
+            timeIncrementButton.setVisibility(View.VISIBLE);
+            updateIncrementLabel();
+        } else {
+            currentDurationIndex = TIME_INCREMENTS.length - 1;
+            timeRemainingMs = SONG_DURATION_MS;
+            timeIncrementButton.setVisibility(View.GONE);
+        }
 
         // Reset x2
         isX2Active = false;
@@ -278,12 +346,15 @@ public class GameActivity extends AppCompatActivity {
     private void handleTimeOut() {
         // Reset time immediately so if stopPlayback triggers onPlaybackStopped,
         // it sees the full duration and doesn't loop back here.
-        timeRemainingMs = SONG_DURATION_MS;
-
-        audioPlayer.stopPlayback();
-        visualizerView.setPlaying(false);
-        playButton.setImageResource(R.drawable.ic_play_arrow);
         isPlaying = false;
+
+        // In Time Increment mode, if we time out, we don't reset duration,
+        // user must manually tap to increase time if they want more.
+        if (!isTimeIncrementMode) {
+            timeRemainingMs = SONG_DURATION_MS;
+        } else {
+            timeRemainingMs = TIME_INCREMENTS[currentDurationIndex];
+        }
     }
 
     private void submitGuess() {
@@ -315,6 +386,15 @@ public class GameActivity extends AppCompatActivity {
         skipButton.setEnabled(false);
 
         int points = 100;
+
+        // Bonus for Time Increment Mode (less time = more points)
+        if (isTimeIncrementMode) {
+            // Base: 100. Bonus: (3 - index) * 50.
+            // Index 0 (2s) -> +150 -> 250 total
+            // Index 3 (30s) -> +0 -> 100 total
+            points += (TIME_INCREMENTS.length - 1 - currentDurationIndex) * 50;
+        }
+
         if (isX2Active) {
             points *= 2;
             x2UsedCount++;
@@ -418,11 +498,7 @@ public class GameActivity extends AppCompatActivity {
         updateX2ButtonState(); // Check if button should hide
 
         if (lives <= 0) {
-            if (isRoundMode) {
-                roundComplete();
-            } else {
-                gameOver();
-            }
+            roundComplete();
         } else {
             isX2Active = false;
             updateX2ButtonState();
@@ -431,7 +507,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void updateHearts() {
-        for (int i = 0; i < MAX_LIVES; i++) {
+        for (int i = 0; i < MAX_LIVES_DEFAULT; i++) {
             if (i < lives) {
                 hearts[i].setVisibility(View.VISIBLE);
 
@@ -456,35 +532,25 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void nextLevel() {
-        if (currentSongIndex < TOTAL_SONGS - 1) {
+        if (currentSongIndex < songUrls.size() - 1) {
             startLevel(currentSongIndex + 1);
         } else {
-            if (isRoundMode) {
+            // End of list
+            if (isInfinite) {
+                // For now, just end game or maybe loop?
+                // User request implies "Infinite" but we only have loaded songs.
+                // We'll treat running out of songs as a "Win" or "Round Complete" even in
+                // infinite for now,
+                // or we could loop back to 0? Looping might be confusing.
+                // Let's go to RoundComplete.
                 roundComplete();
             } else {
-                gameWin();
+                roundComplete();
             }
         }
     }
 
-    private void gameOver() {
-        Intent intent = new Intent(this, GameOverActivity.class);
-        intent.putExtra("score", score);
-        intent.putExtra("correctAnswer", correctAnswers.get(currentSongIndex));
-        intent.putExtra("cover_url", coverUrls.get(currentSongIndex));
-        intent.putExtra("api_url", apiUrl);
-        startActivity(intent);
-        finish();
-    }
-
-    private void gameWin() {
-        Intent intent = new Intent(this, WinActivity.class);
-        intent.putExtra("EXTRA_SCORE", score);
-        intent.putExtra("api_url", apiUrl);
-        intent.putExtra("cover_url", coverUrls.get(currentSongIndex));
-        startActivity(intent);
-        finish();
-    }
+    // Removed gameOver and gameWin methods as they are replaced by roundComplete
 
     private void filterSuggestions(String query) {
         if (query.isEmpty()) {
@@ -526,13 +592,58 @@ public class GameActivity extends AppCompatActivity {
         Intent intent = new Intent(this, RoundCompleteActivity.class);
         intent.putExtra(RoundCompleteActivity.EXTRA_SCORE, score);
         intent.putExtra(RoundCompleteActivity.EXTRA_CORRECT_GUESSES, correctGuesses);
-        intent.putExtra(RoundCompleteActivity.EXTRA_TOTAL_SONGS, TOTAL_SONGS);
+        intent.putExtra(RoundCompleteActivity.EXTRA_TOTAL_SONGS, isInfinite ? correctGuesses : songUrls.size());
         intent.putExtra(RoundCompleteActivity.EXTRA_TOTAL_TIME, timeString);
         intent.putExtra(RoundCompleteActivity.EXTRA_X2_USED, x2UsedCount);
         intent.putExtra(RoundCompleteActivity.EXTRA_CHALLENGE_NAME, challengeType);
         intent.putExtra(RoundCompleteActivity.EXTRA_API_URL, apiUrl);
+        intent.putExtra("GAME_MODE", gameMode);
 
         startActivity(intent);
         finish();
+    }
+
+    private void incrementTime() {
+        if (currentDurationIndex < TIME_INCREMENTS.length - 1) {
+            currentDurationIndex++;
+            timeRemainingMs = TIME_INCREMENTS[currentDurationIndex];
+            updateIncrementLabel();
+
+            // Visual feedback
+            Toast.makeText(this, "Time extended to " + (timeRemainingMs / 1000) + "s", Toast.LENGTH_SHORT).show();
+
+            // If playing, restart with new duration? Or just let user press play?
+            // "adding the same behaviour of the current MainActivity" -> MainActivity
+            // auto-played next tier on failure,
+            // but here it's a manual button. Let's just update the state and maybe stop
+            // playback if running so they can restart?
+            // Or if they tap while playing, extend the timer?
+            // Simplest: Stop playback, ready to play new duration.
+            if (isPlaying) {
+                audioPlayer.stopPlayback();
+                visualizerView.setPlaying(false);
+                playButton.setImageResource(R.drawable.ic_play_arrow);
+                isPlaying = false;
+                stopTimer();
+            }
+
+            // Auto-play? User said "button floating button for time increment".
+            // Usually manual action implies manual play.
+            // But to be smooth, maybe auto-play.
+            // Let's stick to manual play for control.
+        } else {
+            Toast.makeText(this, "Max duration reached!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateIncrementLabel() {
+        if (currentDurationIndex < TIME_INCREMENTS.length - 1) {
+            long current = TIME_INCREMENTS[currentDurationIndex];
+            long next = TIME_INCREMENTS[currentDurationIndex + 1];
+            long diffSeconds = (next - current) / 1000;
+            timeIncrementLabel.setText("+" + diffSeconds + "s");
+        } else {
+            timeIncrementLabel.setText("MAX");
+        }
     }
 }

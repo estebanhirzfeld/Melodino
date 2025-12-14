@@ -184,6 +184,36 @@
     </LinearLayout>
 
     <!-- Input -->
+    <LinearLayout
+        android:id="@+id/btn_time_increment"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_time_increment"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:elevation="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/controls_layout"
+        app:layout_constraintEnd_toEndOf="@+id/controls_layout"
+        app:layout_constraintHorizontal_bias="0.9">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_update"
+            app:tint="#1e293b" />
+
+        <TextView
+            android:id="@+id/tv_increment_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TAP"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#1e293b" />
+    </LinearLayout>
+
     <EditText
         android:id="@+id/guess_input"
         android:layout_width="match_parent"

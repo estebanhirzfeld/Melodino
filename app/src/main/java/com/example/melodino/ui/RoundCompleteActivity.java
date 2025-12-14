@@ -41,13 +41,12 @@ public class RoundCompleteActivity extends AppCompatActivity {
         int totalSongs = getIntent().getIntExtra(EXTRA_TOTAL_SONGS, 5);
         String totalTime = getIntent().getStringExtra(EXTRA_TOTAL_TIME);
         int x2Used = getIntent().getIntExtra(EXTRA_X2_USED, 0);
-        String challengeName = getIntent().getStringExtra(EXTRA_CHALLENGE_NAME);
+        String rawChallengeName = getIntent().getStringExtra(EXTRA_CHALLENGE_NAME);
+        String challengeName = rawChallengeName == null ? "Unknown Challenge" : rawChallengeName;
         String apiUrl = getIntent().getStringExtra(EXTRA_API_URL);
 
         if (totalTime == null)
             totalTime = "0m 0s";
-        if (challengeName == null)
-            challengeName = "Unknown Challenge";
 
         // Set Data
         scoreText.setText(String.format("%,d", score));
@@ -56,11 +55,15 @@ public class RoundCompleteActivity extends AppCompatActivity {
         totalTimeText.setText(totalTime);
         x2PointsText.setText(String.valueOf(x2Used));
 
+        String gameMode = getIntent().getStringExtra("GAME_MODE");
+
         // Setup Buttons
         playAgainButton.setOnClickListener(v -> {
             if (apiUrl != null) {
                 Intent intent = new Intent(RoundCompleteActivity.this, LoadingActivity.class);
                 intent.putExtra("api_url", apiUrl);
+                intent.putExtra("GAME_MODE", gameMode); // Pass mode back
+                intent.putExtra("challenge_type", challengeName); // Pass challenge name back
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
