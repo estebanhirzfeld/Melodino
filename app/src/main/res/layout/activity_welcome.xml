@@ -1,140 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackgroundDark"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     android:padding="24dp">
 
-    <!-- Content Container (centered vertically) -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/content_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/terms_text"
+        app:layout_constraintBottom_toTopOf="@id/footer_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <View
-            android:id="@+id/spotlight"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:alpha="0.6"
-            android:background="@drawable/spotlight_gradient"
-            app:layout_constraintBottom_toBottomOf="@+id/logo_icon"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="@+id/logo_icon"
-            app:layout_constraintStart_toStartOf="@+id/logo_icon"
-            app:layout_constraintTop_toTopOf="@+id/logo_icon"
-            app:layout_constraintWidth_percent="1.2" />
+        <!-- Dino Image with Spotlight -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="192dp"
+            android:layout_height="192dp"
+            android:layout_marginBottom="32dp">
 
-        <!-- Logo Icon -->
-        <ImageView
-            android:id="@+id/logo_icon"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:scaleType="centerInside"
-            android:contentDescription="Melodino logo"
-            android:src="@drawable/ic_logo"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/spotlight_gradient"
+                android:alpha="0.6" />
 
-        <!-- App Title -->
+            <ImageView
+                android:id="@+id/logo_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_logo"
+                android:scaleType="fitCenter" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Welcome Title -->
         <TextView
-            android:id="@+id/app_title"
+            android:id="@+id/welcome_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Melodino"
+            android:text="Welcome Back!"
             android:textColor="@color/white"
-            android:textSize="48sp"
+            android:textSize="36sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-black"
-            android:letterSpacing="-0.02"
-            app:layout_constraintTop_toBottomOf="@id/logo_icon"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:layout_marginBottom="32dp" />
 
-        <!-- Welcome Message -->
-        <TextView
-            android:id="@+id/welcome_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginHorizontal="16dp"
-            android:text="Welcome to the ultimate music guessing game. What's your name, player?"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:alpha="0.7"
-            android:textSize="18sp"
-            android:lineSpacingMultiplier="1.3"
-            app:layout_constraintTop_toBottomOf="@id/app_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="400dp" />
-
-        <!-- Input Container -->
+        <!-- Input Form -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
             android:orientation="vertical"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/welcome_message"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:maxWidth="384dp">
 
-            <!-- Name Input -->
             <EditText
                 android:id="@+id/name_input"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@drawable/edittext_background_selector"
-                android:hint="Enter your name"
-                android:textColorHint="@color/white50"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_input_modern"
+                android:hint="Email or Username"
+                android:textColorHint="#66FFFFFF"
                 android:textColor="@color/white"
-                android:textSize="18sp"
-                android:paddingHorizontal="16dp"
-                android:inputType="textPersonName|textCapWords"
-                android:maxLines="1"
-                android:imeOptions="actionDone"
-                android:maxWidth="400dp" />
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:inputType="textPersonName"
+                android:layout_marginBottom="16dp" />
 
-            <!-- Start Button -->
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/start_button"
-                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="@color/colorPrimary"
-                android:text="Let's Play"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_btn_primary_glow"
+                android:text="Next"
                 android:textColor="@color/colorBackgroundDark"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:cornerRadius="16dp"
-                android:maxWidth="400dp" />
+                android:padding="16dp"
+                android:textAllCaps="false" />
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Terms Text (bottom) -->
-    <TextView
-        android:id="@+id/terms_text"
-        android:layout_width="wrap_content"
+        <!-- Divider -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginVertical="16dp"
+            android:maxWidth="384dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#1AFFFFFF" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="or continue with"
+                android:textColor="#99FFFFFF"
+                android:textSize="14sp"
+                android:layout_marginHorizontal="16dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#1AFFFFFF" />
+        </LinearLayout>
+
+        <!-- Social Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:maxWidth="384dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_btn_social"
+                android:text="Continue with Google"
+                android:textColor="#CCFFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:padding="12dp"
+                android:textAllCaps="false"
+                android:drawableStart="@drawable/ic_google"
+                android:drawablePadding="12dp"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_btn_social"
+                android:text="Continue with Apple"
+                android:textColor="#CCFFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:padding="12dp"
+                android:textAllCaps="false"
+                android:drawableStart="@drawable/ic_apple"
+                android:drawablePadding="12dp"
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Footer -->
+    <LinearLayout
+        android:id="@+id/footer_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="By continuing, you agree to our Terms of Service."
-        android:textAlignment="center"
-        android:textColor="@color/white50"
-        android:textSize="14sp"
+        android:orientation="horizontal"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Don't have an account? "
+            android:textColor="#99FFFFFF" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign Up"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
