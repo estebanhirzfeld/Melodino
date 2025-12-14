@@ -51,6 +51,7 @@ public class GameActivity extends AppCompatActivity {
     private ImageButton playButton;
     private Button x2Button;
     private View timeIncrementButton; // Changed to View to match LinearLayout
+    private TextView timeIncrementLabel;
     private EditText guessInput;
     private Button submitButton;
     private RecyclerView suggestionsRecyclerView;
@@ -106,6 +107,7 @@ public class GameActivity extends AppCompatActivity {
         playButton = findViewById(R.id.btn_play);
         x2Button = findViewById(R.id.btn_x2);
         timeIncrementButton = findViewById(R.id.btn_time_increment);
+        timeIncrementLabel = findViewById(R.id.tv_increment_label);
         guessInput = findViewById(R.id.guess_input);
         submitButton = findViewById(R.id.btn_submit);
         suggestionsRecyclerView = findViewById(R.id.suggestions_recycler_view);
@@ -236,6 +238,7 @@ public class GameActivity extends AppCompatActivity {
             currentDurationIndex = 0;
             timeRemainingMs = TIME_INCREMENTS[0];
             timeIncrementButton.setVisibility(View.VISIBLE);
+            updateIncrementLabel();
         } else {
             currentDurationIndex = TIME_INCREMENTS.length - 1;
             timeRemainingMs = SONG_DURATION_MS;
@@ -604,6 +607,7 @@ public class GameActivity extends AppCompatActivity {
         if (currentDurationIndex < TIME_INCREMENTS.length - 1) {
             currentDurationIndex++;
             timeRemainingMs = TIME_INCREMENTS[currentDurationIndex];
+            updateIncrementLabel();
 
             // Visual feedback
             Toast.makeText(this, "Time extended to " + (timeRemainingMs / 1000) + "s", Toast.LENGTH_SHORT).show();
@@ -629,6 +633,17 @@ public class GameActivity extends AppCompatActivity {
             // Let's stick to manual play for control.
         } else {
             Toast.makeText(this, "Max duration reached!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateIncrementLabel() {
+        if (currentDurationIndex < TIME_INCREMENTS.length - 1) {
+            long current = TIME_INCREMENTS[currentDurationIndex];
+            long next = TIME_INCREMENTS[currentDurationIndex + 1];
+            long diffSeconds = (next - current) / 1000;
+            timeIncrementLabel.setText("+" + diffSeconds + "s");
+        } else {
+            timeIncrementLabel.setText("MAX");
         }
     }
 }

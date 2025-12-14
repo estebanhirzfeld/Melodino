@@ -205,6 +205,7 @@
             app:tint="#1e293b" />
 
         <TextView
+            android:id="@+id/tv_increment_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TAP"
